@@ -3,19 +3,19 @@ In this project, we will be adopting the Git version control workflow. Individua
 
 ### Example of a contributing workflow:
 
-**Fork then clone repo **
+**Clone the repository **
 
 ```git clone <repo folder>```
 
-**Update private repo branch**
+**Create a branch of repository **
 
-`git remote add upstream <original_repo_URL>`<br>
-`git pull upstream`
-`git merge upstream/master`
+Navigate to the <repo folder> in your terminal
+  
+```git branch <branch name>```
 
 **To submit changes to master branch**
 
 `git add .`<br>
-`git commit <meaningful message>`<br>
-`git push`<br>
+`git commit -m <meaningful message>`<br>
+`git push -u origin <name of your branch>`<br>
 `submit pull request to main repo`

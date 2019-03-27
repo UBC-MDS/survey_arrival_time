@@ -3,11 +3,11 @@ In this project, we will be adopting the Git version control workflow. Individua
 
 ### Example of a contributing workflow:
 
-**Clone the repository **
+**Clone the repository**
 
 ```git clone <repo folder>```
 
-**Create a branch of repository **
+**Create a branch of repository**
 
 Navigate to the <repo folder> in your terminal
   

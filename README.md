@@ -4,8 +4,6 @@
 
 **Date:** 2019-03-30
 
-**License:** [MIT](https://opensource.org/licenses/MIT)
-
 ### Survey question (Milestone-1) 
 
 [Milestone 1 writeup](https://github.com/UBC-MDS/survey_arrival_time/blob/master/milestone1.md)

@@ -1,10 +1,12 @@
+<img src="logo.png" align="right" height="140" width="200"/>
+
 # Survey arrival time
 
-<img src="Add a heading-2.png" align="right" height="190" width="220"/>
+**Date:** 2019-03-30
 
-**Date:** 2019-03-27
+### Survey question (Milestone-1) 
 
-**License:** [MIT](https://opensource.org/licenses/MIT)
+[Milestone 1 writeup](https://github.com/UBC-MDS/survey_arrival_time/blob/master/milestone1.md)
 
 #### Authors:
 
@@ -15,6 +17,3 @@
 | Akansha Vashisth     | [@akanshaVashisth](https://github.com/akanshaVashisth) |
 | Ian Flores Siaca    | [@ian-flores](https://github.com/ian-flores) |
 
-### Survey question (Milestone-1) 
-
-[Milestone 1](https://github.com/UBC-MDS/survey_arrival_time/blob/master/milestone1.md)

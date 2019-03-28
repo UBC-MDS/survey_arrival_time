@@ -1,8 +1,8 @@
+<img src="logo.png" align="right" height="140" width="200"/>
+
 # Survey arrival time
 
-<img src="logo.png" align="right" height="120" width="180"/>
-
-**Date:** 2019-03-27
+**Date:** 2019-03-30
 
 **License:** [MIT](https://opensource.org/licenses/MIT)
 

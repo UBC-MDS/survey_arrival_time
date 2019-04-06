@@ -109,10 +109,46 @@ clean_survey_sep_days %>%
 
 ### Exploratory Data Analysis
 
+
 ```{r}
 ### put plots for MW and TT here
 
+
+clean_survey_sep_days %>% 
+  ggplot(aes(x = mw_arrival)) +
+  geom_density() + 
+  facet_wrap(~ mode_of_transport)+
+  labs(x="Arrival time", y="Frequency", title = "Count of student arrival time on Monday Wednesday")
+
+
+clean_survey_sep_days %>% 
+  ggplot(aes(x = tt_arrival)) +
+  geom_density() + 
+  facet_wrap(~ mode_of_transport)+
+  labs(x="Arrival time", y="Frequency", title = "Count of student arrival time on Tuesday Thursday")
 ```
+
+
+
+```{r}
+### violin plot for all days, faceted by mode of transport
+clean_survey_mw %>% 
+  ggplot(aes(x = mode_of_transport, y = arrival)) +
+  geom_violin() +
+  geom_jitter(width = .2, alpha = .3)+
+  labs(y="Arrival time", x="Mode of transport", title = "Mode of transport v/s arrival time on (Monday Wednesday)")
+
+clean_survey_tt %>% 
+  ggplot(aes(x = mode_of_transport, y = arrival)) +
+  geom_violin() +
+  geom_jitter(width = .2, alpha = .3)+
+  labs(y="Arrival time", x="Mode of transport", title = "Mode of transport v/s arrival time on (Tuesday Thursday)")
+
+
+
+```
+
+
 
 
 ```{r}

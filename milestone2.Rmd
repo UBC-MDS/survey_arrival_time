@@ -1,14 +1,16 @@
 ---
-title: "Exploratory data analysis"
-author: "Akansha Vashisth"
-date: '2019-04-03'
+title: "Initial Exploration of the Arrival Time Survey"
+author: "Akansha Vashisth, Ian Flores Siaca, Rachel Riggs, Milos Milic"
+date: '2019-04-06'
 output: github_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message = FALSE)
 library(tidyverse)
 library(lubridate)
+library(skimr)
+library(pander)
 ```
 
 ### Survey question
@@ -16,16 +18,18 @@ library(lubridate)
 **How does distance from campus influence arrival time to lectures?**
 
 ### Collected data
+
 ```{r}
 # Initial survey data to go here
-initial_survey <- read_csv('data/Arrival Time_April 4, 2019_08.20.csv')
+initial_survey <- read_csv('data/Arrival_Time_April_4_2019_08_20.csv', col_type = cols())
+
+head(initial_survey)
 ```
 
 
 ### Cleaning data
-```{r}
-# Ian please put your lovely code here :)
 
+```{r}
 clean_survey_sep_days <- initial_survey %>%
   select(contains('Q')) %>%
   slice(-c(1:2)) %>%
@@ -36,16 +40,17 @@ clean_survey_sep_days <- initial_survey %>%
   mutate(mw_arrival = hm(mw_arrival),
          mw_arrival = hour(mw_arrival)*60 + minute(mw_arrival),
          mw_arrival = if_else(mw_arrival < 400, 540 + mw_arrival, mw_arrival),
-         mw_arrival = 9*60 - mw_arrival) %>%
+         mw_arrival = mw_arrival - 9*60) %>%
   mutate(tt_arrival = hm(tt_arrival),
          tt_arrival = hour(tt_arrival)*60 + minute(tt_arrival),
          tt_arrival = if_else(tt_arrival < 430, 570 + tt_arrival, tt_arrival),
-         tt_arrival = 9.5*60 - tt_arrival) %>%
+         tt_arrival = tt_arrival - 9.5*60) %>%
   mutate(mode_of_transport = fct_recode(mode_of_transport, 
                                         driving = '1',
                                         transit = '2',
                                         walking = '3',
-                                        cycling = '4'))
+                                        cycling = '4')) %>%
+    mutate(distance_km = as.numeric(distance_km))
 
 
 clean_survey_mw <- clean_survey_sep_days %>% 
@@ -63,7 +68,7 @@ clean_survey_all_days <- bind_rows(clean_survey_mw, clean_survey_tt)
 ### Cleaned data
 
 ```{r}
-clean_survey_all_days
+head(clean_survey_all_days)
 ```
 
 
@@ -74,15 +79,34 @@ clean_survey_all_days
 4. mode_of_transport: Mode of transportation used to travel. This is categorical variable.
 
 
-### TABLE OF SUMMARY STATISTICS
-```{r}
-summary(clean_survey_all_days)
+### Table of Summary Statistics
 
-# by mode of transit
-by(clean_survey_all_days, clean_survey_all_days$mode_of_transport, summary)
+#### General Summary
+
+```{r, include = FALSE}
+panderOptions('knitr.auto.asis', FALSE)
+skim_with(numeric = list(hist = NULL), factor = list(ordered = NULL))
 ```
 
-### EDA
+```{r}
+skim(clean_survey_sep_days) %>% 
+    kable()
+```
+
+#### Grouped by Mode of Transport
+
+```{r, include = FALSE}
+skim_with(numeric = list(hist = NULL, missing = NULL, complete = NULL))
+```
+
+```{r}
+clean_survey_sep_days %>%
+    group_by(mode_of_transport) %>%
+    skim() %>%
+    kable()
+```
+
+### Exploratory Data Analysis
 
 ```{r}
 ### INITIAL HISTOGRAMS FOR MW & TT

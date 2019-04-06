@@ -1,0 +1,63 @@
+StartDate,EndDate,Status,Progress,Duration (in seconds),Finished,RecordedDate,ResponseId,DistributionChannel,UserLanguage,Q1,Q3,Q4,Q5
+Start Date,End Date,Response Type,Progress,Duration (in seconds),Finished,Recorded Date,Response ID,Distribution Channel,User Language,"How far from Hugh Dempster do you live in kilometers?
+
+Please use this link to Google Maps and be sure to click on the appropriate mode of transit (Driving, Transit, Walking, or Cycling).","What time do you typically arrive at Hugh Dempster on Mondays and Wednesdays?
+please enter in the format hh:mm","What time do you typically arrive at Hugh Dempster on Tuesdays and Thursdays?
+please enter in the format hh:mm",What is your typical mode of transit?
+"{""ImportId"":""startDate"",""timeZone"":""America/Los_Angeles""}","{""ImportId"":""endDate"",""timeZone"":""America/Los_Angeles""}","{""ImportId"":""status""}","{""ImportId"":""progress""}","{""ImportId"":""duration""}","{""ImportId"":""finished""}","{""ImportId"":""recordedDate"",""timeZone"":""America/Los_Angeles""}","{""ImportId"":""_recordId""}","{""ImportId"":""distributionChannel""}","{""ImportId"":""userLanguage""}","{""ImportId"":""QID1_TEXT""}","{""ImportId"":""QID3_TEXT""}","{""ImportId"":""QID4_TEXT""}","{""ImportId"":""QID5""}"
+2019-04-03 14:54:49,2019-04-03 14:56:57,IP Address,100,128,True,2019-04-03 14:56:57,R_vozBtQsAMZkXHRn,anonymous,EN,1.1,08.55,09:20,Walking
+2019-04-03 15:03:39,2019-04-03 15:04:42,IP Address,100,63,True,2019-04-03 15:04:42,R_3niuaEdwzX8XCtt,anonymous,EN,5.1,08:40,09:05,Transit
+2019-04-03 15:04:35,2019-04-03 15:06:04,IP Address,100,88,True,2019-04-03 15:06:05,R_3fGBxa3vUF8ipfr,anonymous,EN,20,8:10,8:50,Driving
+2019-04-03 15:04:55,2019-04-03 15:06:42,IP Address,100,107,True,2019-04-03 15:06:42,R_2aRJ5Ucqz31fyi0,anonymous,EN,7.4,09:00,09:15,Transit
+2019-04-03 15:06:37,2019-04-03 15:07:58,IP Address,100,81,True,2019-04-03 15:07:59,R_1pxJQk3DmkjT1AE,anonymous,EN,1,9:00,9:30,Walking
+2019-04-03 15:06:41,2019-04-03 15:08:33,IP Address,100,112,True,2019-04-03 15:08:34,R_1MSQdo51nemqBeL,anonymous,EN,12.4,08:58,09:28,Cycling
+2019-04-03 15:09:54,2019-04-03 15:10:58,IP Address,100,63,True,2019-04-03 15:10:58,R_3qCr6GcMGdQAiRW,anonymous,EN,12,08:45,09:15,Driving
+2019-04-03 15:08:05,2019-04-03 15:11:14,IP Address,100,189,True,2019-04-03 15:11:14,R_307wiBCZHsATvh2,anonymous,EN,10,08:55,9:25,Transit
+2019-04-03 15:11:36,2019-04-03 15:12:42,IP Address,100,66,True,2019-04-03 15:12:42,R_bPHP4Wzc8fDaaVH,anonymous,EN,15,7:30,7:30,Driving
+2019-04-03 15:06:21,2019-04-03 15:13:36,IP Address,100,435,True,2019-04-03 15:13:36,R_24MJ1SrfBUt9gnc,anonymous,EN,10,08:55,10:55,Transit
+2019-04-03 15:11:41,2019-04-03 15:14:06,IP Address,100,145,True,2019-04-03 15:14:07,R_Qhmf7R1Zk1pHjTH,anonymous,EN,11.3,08:50,9:20,Transit
+2019-04-03 15:11:09,2019-04-03 15:14:45,IP Address,100,216,True,2019-04-03 15:14:45,R_25tJov0KequNU60,anonymous,EN,6,09:05,09:45,Transit
+2019-04-03 15:13:42,2019-04-03 15:14:46,IP Address,100,63,True,2019-04-03 15:14:46,R_2usLe8VIub8fQHf,anonymous,EN,10,08:55,09:25,Transit
+2019-04-03 15:14:20,2019-04-03 15:14:59,IP Address,100,39,True,2019-04-03 15:15:00,R_24C2U9MDXiT1YiE,anonymous,EN,6.6,9:30,9:45,Transit
+2019-04-03 15:15:10,2019-04-03 15:16:47,IP Address,100,97,True,2019-04-03 15:16:47,R_3g5hyojHddrdK32,anonymous,EN,7.7,08:45,09:15,Transit
+2019-04-03 15:15:52,2019-04-03 15:16:51,IP Address,100,58,True,2019-04-03 15:16:51,R_2saOLY6gkXy4SFQ,anonymous,EN,1.2,08:50,09:05,Walking
+2019-04-03 15:15:30,2019-04-03 15:17:08,IP Address,100,98,True,2019-04-03 15:17:09,R_3fT9jACCLl6v9Vo,anonymous,EN,7.8,9:15,10:45,Transit
+2019-04-03 15:15:54,2019-04-03 15:17:21,IP Address,100,87,True,2019-04-03 15:17:21,R_3KJGjnPoaydulCb,anonymous,EN,6.2,08:00,9:30,Transit
+2019-04-03 15:10:15,2019-04-03 15:17:22,IP Address,100,427,True,2019-04-03 15:17:23,R_1JKqbEn6bGDPb8C,anonymous,EN,15,10:30,11:00,Driving
+2019-04-03 15:09:22,2019-04-03 15:17:24,IP Address,100,482,True,2019-04-03 15:17:25,R_1pRUHzx6ecNaBAP,anonymous,EN,16,09:07,09:32,Transit
+2019-04-03 15:18:03,2019-04-03 15:19:02,IP Address,100,58,True,2019-04-03 15:19:02,R_2TIed0m1PLBqh8Y,anonymous,EN,0.7,00:10,00:10,Walking
+2019-04-03 15:17:34,2019-04-03 15:19:17,IP Address,100,103,True,2019-04-03 15:19:18,R_1f8CUItSuwjiIQG,anonymous,EN,26.8,08:15,08:15,Driving
+2019-04-03 15:17:47,2019-04-03 15:19:20,IP Address,100,93,True,2019-04-03 15:19:21,R_26mtNBPKFVj21XB,anonymous,EN,6.7,09:15,09:40,Transit
+2019-04-03 15:17:28,2019-04-03 15:19:21,IP Address,100,112,True,2019-04-03 15:19:21,R_ywpN1Bod9KnDAvn,anonymous,EN,4.2,09:00,09:30,Transit
+2019-04-03 15:19:04,2019-04-03 15:20:28,IP Address,100,83,True,2019-04-03 15:20:28,R_12us8Mfat9zRUHI,anonymous,EN,9.1,09:30,09:30,Driving
+2019-04-03 15:19:52,2019-04-03 15:20:58,IP Address,100,66,True,2019-04-03 15:20:59,R_22xmBhVSup3yW94,anonymous,EN,1.5,09:05,09:35,Cycling
+2019-04-03 15:19:58,2019-04-03 15:21:00,IP Address,100,62,True,2019-04-03 15:21:00,R_z7HxJu75U5nthjr,anonymous,EN,1,09:10,09:40,Walking
+2019-04-03 15:17:57,2019-04-03 15:21:04,IP Address,100,186,True,2019-04-03 15:21:04,R_3EXU1nXGNSl0UOo,anonymous,EN,10,08:45,09:25,Transit
+2019-04-03 15:17:09,2019-04-03 15:22:26,IP Address,100,316,True,2019-04-03 15:22:26,R_uqV1vau0mFf0P17,anonymous,EN,10.1,09:30,10:00,Transit
+2019-04-03 15:18:58,2019-04-03 15:22:31,IP Address,100,213,True,2019-04-03 15:22:31,R_1exiZjDpb3wiw7E,anonymous,EN,1.4,08:58,09:25,Walking
+2019-04-03 15:20:51,2019-04-03 15:22:51,IP Address,100,119,True,2019-04-03 15:22:51,R_2dW34Edx2mEF8KV,anonymous,EN,0.7,08:55,09:25,Walking
+2019-04-03 15:12:00,2019-04-03 15:24:55,IP Address,100,774,True,2019-04-03 15:24:55,R_3fdCwFeGnhZVlPH,anonymous,EN,5.1,9:10,9:30,Transit
+2019-04-03 15:25:08,2019-04-03 15:26:26,IP Address,100,78,True,2019-04-03 15:26:27,R_eSb0Cfzi0E1OeM9,anonymous,EN,1.6,09:05,9:35,Walking
+2019-04-03 15:25:39,2019-04-03 15:26:36,IP Address,100,57,True,2019-04-03 15:26:37,R_2X54jsKf8h8ZePN,anonymous,EN,1,10:00,10:00,Walking
+2019-04-03 15:26:13,2019-04-03 15:27:31,IP Address,100,77,True,2019-04-03 15:27:31,R_1q3q1iMCVx7bnII,anonymous,EN,7,09:05,09:30,Transit
+2019-04-03 15:23:43,2019-04-03 15:27:41,IP Address,100,237,True,2019-04-03 15:27:41,R_2aVMR9TjTHU2WGS,anonymous,EN,1,"09:10 ","09:30 ",Walking
+2019-04-03 15:27:18,2019-04-03 15:28:31,IP Address,100,73,True,2019-04-03 15:28:32,R_306v8U14SgAgT8q,anonymous,EN,1,09:00,09:28,Walking
+2019-04-03 15:27:20,2019-04-03 15:28:38,IP Address,100,78,True,2019-04-03 15:28:39,R_55MZHnVg5yZ6ZMJ,anonymous,EN,0.9,08:57,09:27,Walking
+2019-04-03 15:28:27,2019-04-03 15:30:30,IP Address,100,122,True,2019-04-03 15:30:30,R_1FtzKEsTPJcurF1,anonymous,EN,44,08:58,09:25,Transit
+2019-04-03 14:54:59,2019-04-03 15:31:40,IP Address,100,2200,True,2019-04-03 15:31:40,R_31yqqnHOKIOPlZW,anonymous,EN,12,08:15,08:15,Transit
+2019-04-03 15:30:40,2019-04-03 15:32:06,IP Address,100,86,True,2019-04-03 15:32:07,R_1QGgH0AED5OGOJt,anonymous,EN,0.9,09:03,09:33,Walking
+2019-04-03 15:30:47,2019-04-03 15:32:40,IP Address,100,112,True,2019-04-03 15:32:40,R_OvdjhtV8FUrlmQF,anonymous,EN,7.5,09:05,09:30,Transit
+2019-04-03 15:32:12,2019-04-03 15:35:07,IP Address,100,174,True,2019-04-03 15:35:07,R_ZwWTWZiumPIsZLb,anonymous,EN,1,09:30,10:00,Walking
+2019-04-03 15:31:10,2019-04-03 15:35:45,IP Address,100,275,True,2019-04-03 15:35:46,R_21vS5bQX7mfkxM9,anonymous,EN,5.3,09:05,09:25,Transit
+2019-04-03 15:34:45,2019-04-03 15:35:53,IP Address,100,67,True,2019-04-03 15:35:53,R_3QXViifBHh6PeeT,anonymous,EN,8.1,09:10,09:30,Transit
+2019-04-03 15:35:29,2019-04-03 15:38:54,IP Address,100,204,True,2019-04-03 15:38:54,R_1LwEo0njvuv0XEP,anonymous,EN,2,09:00,09:30,Transit
+2019-04-03 15:38:04,2019-04-03 15:39:31,IP Address,100,86,True,2019-04-03 15:39:31,R_1lypqr1AzrBuSUM,anonymous,EN,1,9:03,9:33,Walking
+2019-04-03 15:43:05,2019-04-03 15:44:16,IP Address,100,70,True,2019-04-03 15:44:16,R_3J3qBJxDnb8maxe,anonymous,EN,6.5,09:03,09:30,Cycling
+2019-04-03 15:46:21,2019-04-03 15:47:10,IP Address,100,48,True,2019-04-03 15:47:11,R_3lsH0MwQsuEWeFN,anonymous,EN,15,09:00,09:25,Driving
+2019-04-03 15:41:52,2019-04-03 15:49:04,IP Address,100,431,True,2019-04-03 15:49:05,R_1OUFDDYyGmG8B9a,anonymous,EN,14,9:10,9:20,Transit
+2019-04-03 15:49:45,2019-04-03 15:50:11,IP Address,100,26,True,2019-04-03 15:50:14,R_1BQ50BE34RUIweF,anonymous,EN,1,09:05,09:35,Walking
+2019-04-03 15:36:04,2019-04-03 15:53:51,IP Address,100,1067,True,2019-04-03 15:53:52,R_1HoCfFESuTyO8kU,anonymous,EN,12.7,08:55,09:25,Transit
+2019-04-03 15:53:28,2019-04-03 15:54:17,IP Address,100,49,True,2019-04-03 15:54:18,R_XAntAIgzs0vSNEJ,anonymous,EN,10,9:07,9:37,Transit
+2019-04-03 15:58:57,2019-04-03 16:28:07,IP Address,100,1749,True,2019-04-03 16:28:08,R_3iI6y6TPndtiOEp,anonymous,EN,22,08:30,9:00,Transit
+2019-04-03 16:56:28,2019-04-03 16:58:04,IP Address,100,96,True,2019-04-03 16:58:04,R_2OOpBWOvSOd7UOR,anonymous,EN,3.6,09:07,09:32,Cycling
+2019-04-03 16:00:24,2019-04-03 20:02:56,IP Address,100,14551,True,2019-04-03 20:02:57,R_1GH2j5NLDZKErpy,anonymous,EN,9.5,09:10,09:35,Transit

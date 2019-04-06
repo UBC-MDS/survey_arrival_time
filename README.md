@@ -1,4 +1,4 @@
-<img src="logo.png" align="right" height="140" width="200"/>
+<img src="imgs/logo.png" align="right" height="140" width="200"/>
 
 # Survey arrival time
 

@@ -1,6 +1,6 @@
 ---
 title: "Initial Exploration of the Arrival Time Survey"
-author: "Akansha Vashisth, Ian Flores Siaca, Rachel Riggs, Milos Milic"
+author: "Akansha Vashisth, Ian Flores Siaca, Rachel K. Riggs, Milos Milic"
 date: '2019-04-06'
 output: github_document
 ---
@@ -20,7 +20,7 @@ library(pander)
 ### Collected data
 
 ```{r}
-# Initial survey data to go here
+# Initial survey data
 initial_survey <- read_csv('data/Arrival_Time_April_4_2019_08_20.csv', col_type = cols())
 
 head(initial_survey)
@@ -68,15 +68,16 @@ clean_survey_all_days <- bind_rows(clean_survey_mw, clean_survey_tt)
 ### Cleaned data
 
 ```{r}
+head(clean_survey_sep_days)
 head(clean_survey_all_days)
 ```
 
 
 ### Variables in the data
-1. distance_km: Distance travelled in kilometers. This is numeric variable.
-2. mw_arrival: Arrival time in class on Mondays and Wednesdays. This is numeric variable.
-3. tt_arrival: Arrival time in class on Tuesdays and Thursdays. This is numeric variable.
-4. mode_of_transport: Mode of transportation used to travel. This is categorical variable.
+1. distance_km: Distance travelled in kilometers. This is a numeric variable.
+2. mw_arrival: Arrival time in class on Mondays and Wednesdays. This is a numeric variable.
+3. tt_arrival: Arrival time in class on Tuesdays and Thursdays. This is a numeric variable.
+4. mode_of_transport: Mode of transportation used to travel. This is a categorical variable.
 
 
 ### Table of Summary Statistics
@@ -109,59 +110,23 @@ clean_survey_sep_days %>%
 ### Exploratory Data Analysis
 
 ```{r}
-### INITIAL HISTOGRAMS FOR MW & TT
-
-clean_survey_sep_days %>% 
-  ggplot(aes(x = mw_arrival)) +
-  geom_histogram()
-
-clean_survey_sep_days %>% 
-  ggplot(aes(x = tt_arrival)) +
-  geom_histogram()+
-  labs(x="Arrival time", y="Frequency", title = "Arrival time v/s number of students")
+### put plots for MW and TT here
 
 ```
 
 
 ```{r}
-### INITIAL SCATTERPLOTS FOR MW
-clean_survey_sep_days %>% 
-  ggplot(aes(x = mw_arrival, y = distance_km)) +
-  geom_point()+
-  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance on Mondays and Wednesdays")
-```
-
-```{r}
-### FACET ON MODE OF TRANSPORT
+### scatterplot for all days grouped together, faceted by mode of transport
 clean_survey_sep_days %>% 
   ggplot(aes(x = mw_arrival, y = distance_km)) +
   geom_point() +
   facet_wrap(~ mode_of_transport) +
-  geom_smooth(method = "lm", se = F)+
-  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
-```
-
-```{r}
-clean_survey_sep_days %>% 
-  ggplot(aes(x = mw_arrival, y = distance_km)) +
-  geom_point(aes(color = mode_of_transport))+
   labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
 ```
 
 
 ```{r}
-### SCATTERPLOT FOR ALL DAYS, AND FACETED
-
-clean_survey_all_days %>% 
-  ggplot(aes(x = arrival, y = distance_km)) +
-  geom_point(aes(color = mode_of_transport), alpha = .5) +
-  facet_wrap(~ mode_of_transport)+
-  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
-```
-
-
-```{r}
-### DENSITY 
+### density plot for all days, faceted by mode of transport
 clean_survey_all_days %>% 
   ggplot(aes(x = arrival)) +
   geom_density() + 
@@ -171,14 +136,15 @@ clean_survey_all_days %>%
 
 
 ```{r}
-### BOXPLOT & VIOLIN PLOT FOR ALL DAYS
-
+### boxplot for all days, faceted by mode of transport
 clean_survey_all_days %>% 
   ggplot(aes(x = mode_of_transport, y = arrival)) +
   geom_boxplot()+
   labs(y="Arrival time", x="Mode of transport", title = "Mode of transport v/s arrival time")
+```
 
-
+```{r}
+### violin plot for all days, faceted by mode of transport
 clean_survey_all_days %>% 
   ggplot(aes(x = mode_of_transport, y = arrival)) +
   geom_violin() +

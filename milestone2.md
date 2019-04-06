@@ -1,6 +1,6 @@
 Initial Exploration of the Arrival Time Survey
 ================
-Akansha Vashisth, Ian Flores Siaca, Rachel Riggs, Milos Milic
+Akansha Vashisth, Ian Flores Siaca, Rachel K. Riggs, Milos Milic
 2019-04-06
 
 ### Survey question
@@ -10,7 +10,7 @@ Akansha Vashisth, Ian Flores Siaca, Rachel Riggs, Milos Milic
 ### Collected data
 
 ``` r
-# Initial survey data to go here
+# Initial survey data
 initial_survey <- read_csv('data/Arrival_Time_April_4_2019_08_20.csv', col_type = cols())
 
 head(initial_survey)
@@ -25,7 +25,7 @@ head(initial_survey)
     ## 4 2019-04-… 2019-0… IP Ad… 100      63               True     2019-04-03 …
     ## 5 2019-04-… 2019-0… IP Ad… 100      88               True     2019-04-03 …
     ## 6 2019-04-… 2019-0… IP Ad… 100      107              True     2019-04-03 …
-    ## # … with 7 more variables: ResponseId <chr>, DistributionChannel <chr>,
+    ## # ... with 7 more variables: ResponseId <chr>, DistributionChannel <chr>,
     ## #   UserLanguage <chr>, Q1 <chr>, Q3 <chr>, Q4 <chr>, Q5 <chr>
 
 ### Cleaning data
@@ -68,6 +68,20 @@ clean_survey_all_days <- bind_rows(clean_survey_mw, clean_survey_tt)
 ### Cleaned data
 
 ``` r
+head(clean_survey_sep_days)
+```
+
+    ## # A tibble: 6 x 4
+    ##   distance_km mw_arrival tt_arrival mode_of_transport
+    ##         <dbl>      <dbl>      <dbl> <fct>            
+    ## 1         1.1         -5        -10 Walking          
+    ## 2         5.1        -20        -25 Transit          
+    ## 3        20          -50        -40 Driving          
+    ## 4         7.4          0        -15 Transit          
+    ## 5         1            0          0 Walking          
+    ## 6        12.4         -2         -2 Cycling
+
+``` r
 head(clean_survey_all_days)
 ```
 
@@ -83,10 +97,14 @@ head(clean_survey_all_days)
 
 ### Variables in the data
 
-1.  distance\_km: Distance travelled in kilometers. This is numeric variable.
-2.  mw\_arrival: Arrival time in class on Mondays and Wednesdays. This is numeric variable.
-3.  tt\_arrival: Arrival time in class on Tuesdays and Thursdays. This is numeric variable.
-4.  mode\_of\_transport: Mode of transportation used to travel. This is categorical variable.
+1.  distance\_km: Distance travelled in kilometers. This is a numeric
+    variable.
+2.  mw\_arrival: Arrival time in class on Mondays and Wednesdays. This
+    is a numeric variable.
+3.  tt\_arrival: Arrival time in class on Tuesdays and Thursdays. This
+    is a numeric variable.
+4.  mode\_of\_transport: Mode of transportation used to travel. This is
+    a categorical variable.
 
 ### Table of Summary Statistics
 
@@ -148,69 +166,22 @@ clean_survey_sep_days %>%
 ### Exploratory Data Analysis
 
 ``` r
-### INITIAL HISTOGRAMS FOR MW & TT
-
-clean_survey_sep_days %>% 
-  ggplot(aes(x = mw_arrival)) +
-  geom_histogram()
+### put plots for MW and TT here
 ```
 
-![](milestone2_files/figure-markdown_github/unnamed-chunk-8-1.png)
-
 ``` r
-clean_survey_sep_days %>% 
-  ggplot(aes(x = tt_arrival)) +
-  geom_histogram()+
-  labs(x="Arrival time", y="Frequency", title = "Arrival time v/s number of students")
-```
-
-![](milestone2_files/figure-markdown_github/unnamed-chunk-8-2.png)
-
-``` r
-### INITIAL SCATTERPLOTS FOR MW
-clean_survey_sep_days %>% 
-  ggplot(aes(x = mw_arrival, y = distance_km)) +
-  geom_point()+
-  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance on Mondays and Wednesdays")
-```
-
-![](milestone2_files/figure-markdown_github/unnamed-chunk-9-1.png)
-
-``` r
-### FACET ON MODE OF TRANSPORT
+### scatterplot for all days grouped together, faceted by mode of transport
 clean_survey_sep_days %>% 
   ggplot(aes(x = mw_arrival, y = distance_km)) +
   geom_point() +
   facet_wrap(~ mode_of_transport) +
-  geom_smooth(method = "lm", se = F)+
   labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
 ```
 
-![](milestone2_files/figure-markdown_github/unnamed-chunk-10-1.png)
+![](milestone2_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ``` r
-clean_survey_sep_days %>% 
-  ggplot(aes(x = mw_arrival, y = distance_km)) +
-  geom_point(aes(color = mode_of_transport))+
-  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
-```
-
-![](milestone2_files/figure-markdown_github/unnamed-chunk-11-1.png)
-
-``` r
-### SCATTERPLOT FOR ALL DAYS, AND FACETED
-
-clean_survey_all_days %>% 
-  ggplot(aes(x = arrival, y = distance_km)) +
-  geom_point(aes(color = mode_of_transport), alpha = .5) +
-  facet_wrap(~ mode_of_transport)+
-  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
-```
-
-![](milestone2_files/figure-markdown_github/unnamed-chunk-12-1.png)
-
-``` r
-### DENSITY 
+### density plot for all days, faceted by mode of transport
 clean_survey_all_days %>% 
   ggplot(aes(x = arrival)) +
   geom_density() + 
@@ -218,20 +189,20 @@ clean_survey_all_days %>%
   labs(x="Arrival time", y="Frequency", title = "Count of student arrival time")
 ```
 
-![](milestone2_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](milestone2_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ``` r
-### BOXPLOT & VIOLIN PLOT FOR ALL DAYS
-
+### boxplot for all days, faceted by mode of transport
 clean_survey_all_days %>% 
   ggplot(aes(x = mode_of_transport, y = arrival)) +
   geom_boxplot()+
   labs(y="Arrival time", x="Mode of transport", title = "Mode of transport v/s arrival time")
 ```
 
-![](milestone2_files/figure-markdown_github/unnamed-chunk-14-1.png)
+![](milestone2_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ``` r
+### violin plot for all days, faceted by mode of transport
 clean_survey_all_days %>% 
   ggplot(aes(x = mode_of_transport, y = arrival)) +
   geom_violin() +
@@ -239,8 +210,8 @@ clean_survey_all_days %>%
   labs(y="Arrival time", x="Mode of transport", title = "Mode of transport v/s arrival time")
 ```
 
-![](milestone2_files/figure-markdown_github/unnamed-chunk-14-2.png)
+![](milestone2_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ### Conclusion
 
-(open to all) &gt; Based on the EDA
+(open to all) \> Based on the EDA

@@ -1,0 +1,213 @@
+---
+title: "eda"
+author: "Akansha Vashisth"
+date: '2019-04-03'
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+```
+
+### Survey question
+
+**How does distance from campus influence arrival time to lectures?**
+
+### Collected data
+```{r}
+# Initial survey data to go here
+initial_survey <- read_csv('data/Arrival Time_April 4, 2019_08.20.csv')
+```
+
+
+### Preprocessing on data
+```{r}
+# Ian please put your lovely code here :)
+
+clean_survey_sep_days <- initial_survey %>%
+  select(contains('Q')) %>%
+  slice(-c(1:2)) %>%
+  rename('distance_km' = 'Q1',
+         'mw_arrival' = 'Q3',
+         'tt_arrival' = 'Q4',
+         'mode_of_transport' = 'Q5') %>% 
+  mutate(mw_arrival = hm(mw_arrival),
+         mw_arrival = hour(mw_arrival)*60 + minute(mw_arrival),
+         mw_arrival = if_else(mw_arrival < 400, 540 + mw_arrival, mw_arrival),
+         mw_arrival = 9*60 - mw_arrival) %>%
+  mutate(tt_arrival = hm(tt_arrival),
+         tt_arrival = hour(tt_arrival)*60 + minute(tt_arrival),
+         tt_arrival = if_else(tt_arrival < 430, 570 + tt_arrival, tt_arrival),
+         tt_arrival = 9.5*60 - tt_arrival) %>%
+  mutate(mode_of_transport = fct_recode(mode_of_transport, 
+                                        driving = '1',
+                                        transit = '2',
+                                        walking = '3',
+                                        cycling = '4'))
+
+clean_survey_sep_days
+clean_survey_sep_days$distance_km <- as.numeric(clean_survey_sep_days$distance_km)
+
+
+View(clean_survey_sep_days)
+
+levels(clean_survey_sep_days$mode_of_transport)
+
+
+clean_survey_mw <- clean_survey_sep_days %>% 
+  select(-c(tt_arrival)) %>% 
+  rename(arrival = mw_arrival)
+
+clean_survey_tt <- clean_survey_sep_days %>% 
+  select(-c(mw_arrival)) %>% 
+  rename(arrival = tt_arrival)
+
+clean_survey_all_days <- bind_rows(clean_survey_mw, clean_survey_tt)
+```
+
+
+### Cleaned data
+
+```{r}
+survey_data <- read_csv("data/clean_survey_responses.csv")
+head(survey_data)
+```
+
+
+### Variables in the data
+1. distance_km: Distance travelled in kilometers. This is numeric variable.
+2. mw_arrival: Arrival time in class on Mondays and Wednesdays. This is numeric variable.
+3. tt_arrival: Arrival time in class on Tuesdays and Thursdays. This is numeric variable.
+4. mode_of_transport: Mode of transportation used to travel. This is categorical variable.
+
+### Cleaning data 
+```{r}
+survey_data$mode_of_transport <- as.factor(survey_data$mode_of_transport)
+
+clean_survey_sep_days
+typeof(clean_survey_sep_days$distance_km)
+clean_survey_sep_days$distance_km <- as.numeric(clean_survey_sep_days$distance_km)
+
+clean_survey_all_days
+typeof(clean_survey_all_days$distance_km)
+
+dim(survey_data)
+dim(clean_survey_sep_days)
+dim(clean_survey_all_days)
+
+```
+
+### TABLE OF SUMMARY STATISTICS
+```{r}
+summary(clean_survey_all_days) %>% 
+  knitr::kable()
+
+summary(clean_survey_sep_days) %>% 
+  knitr::kable()
+
+
+# by mode of transit
+by(clean_survey_all_days, clean_survey_all_days$mode_of_transport, summary)
+```
+
+### EDA
+
+```{r}
+### INITIAL HISTOGRAMS FOR MW & TT
+
+clean_survey_sep_days %>% 
+  ggplot(aes(x = mw_arrival)) +
+  geom_histogram()
+
+clean_survey_sep_days %>% 
+  ggplot(aes(x = tt_arrival)) +
+  geom_histogram()+
+  labs(x="Arrival time", y="Frequency", title = "Arrival time v/s number of students")
+
+```
+
+
+```{r}
+### INITIAL SCATTERPLOTS FOR MW
+clean_survey_sep_days %>% 
+  ggplot(aes(x = mw_arrival, y = distance_km)) +
+  geom_point()+
+  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance on Mondays and Wednesdays")
+```
+
+```{r}
+### FACET ON MODE OF TRANSPORT
+clean_survey_sep_days %>% 
+  ggplot(aes(x = mw_arrival, y = distance_km)) +
+  geom_point() +
+  facet_wrap(~ mode_of_transport)+
+  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
+
+clean_survey_sep_days %>% 
+  ggplot(aes(x = mw_arrival, y = distance_km)) +
+  geom_point() +
+  facet_wrap(~ mode_of_transport) +
+  geom_smooth(method = "lm", se = F)+
+  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
+```
+
+```{r}
+### COLOR INSTEAD OF FACET
+clean_survey_sep_days %>% 
+  ggplot(aes(x = mw_arrival, y = distance_km)) +
+  geom_point(aes(color = mode_of_transport))+
+  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
+```
+
+
+```{r}
+### SCATTERPLOT FOR ALL DAYS, AND FACETED
+
+clean_survey_all_days %>% 
+  ggplot(aes(x = arrival, y = distance_km)) +
+  geom_point()+
+  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
+
+clean_survey_all_days %>% 
+  ggplot(aes(x = arrival, y = distance_km)) +
+  geom_point(aes(color = mode_of_transport), alpha = .5) +
+  facet_wrap(~ mode_of_transport)+
+  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
+```
+
+
+```{r}
+### DENSITY 
+clean_survey_all_days %>% 
+  ggplot(aes(x = arrival)) +
+  geom_density() + 
+  facet_wrap(~ mode_of_transport)+
+  labs(x="Arrival time", y="Frequency", title = "Count of student arrival time")
+```
+
+
+```{r}
+### BOXPLOT & VIOLIN PLOT FOR ALL DAYS
+
+clean_survey_all_days %>% 
+  ggplot(aes(x = mode_of_transport, y = arrival)) +
+  geom_boxplot()+
+  labs(y="Arrival time", x="Mode of transport", title = "Mode of transport v/s arrival time")
+
+
+clean_survey_all_days %>% 
+  ggplot(aes(x = mode_of_transport, y = arrival)) +
+  geom_violin() +
+  geom_jitter(width = .2, alpha = .3)+
+  labs(y="Arrival time", x="Mode of transport", title = "Mode of transport v/s arrival time")
+```
+
+### Conclusion
+(open to all)
+>Maybe - Mode of transit is a direct influencer on both arrival time and distance.

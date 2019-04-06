@@ -1,16 +1,12 @@
 ---
-title: "eda"
+title: "Exploratory data analysis"
 author: "Akansha Vashisth"
 date: '2019-04-03'
 output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-```{r}
-library(ggplot2)
+knitr::opts_chunk$set(echo = FALSE)
 library(tidyverse)
 library(lubridate)
 ```
@@ -26,7 +22,7 @@ initial_survey <- read_csv('data/Arrival Time_April 4, 2019_08.20.csv')
 ```
 
 
-### Preprocessing on data
+### Cleaning data
 ```{r}
 # Ian please put your lovely code here :)
 
@@ -51,14 +47,6 @@ clean_survey_sep_days <- initial_survey %>%
                                         walking = '3',
                                         cycling = '4'))
 
-clean_survey_sep_days
-clean_survey_sep_days$distance_km <- as.numeric(clean_survey_sep_days$distance_km)
-
-
-View(clean_survey_sep_days)
-
-levels(clean_survey_sep_days$mode_of_transport)
-
 
 clean_survey_mw <- clean_survey_sep_days %>% 
   select(-c(tt_arrival)) %>% 
@@ -75,8 +63,7 @@ clean_survey_all_days <- bind_rows(clean_survey_mw, clean_survey_tt)
 ### Cleaned data
 
 ```{r}
-survey_data <- read_csv("data/clean_survey_responses.csv")
-head(survey_data)
+clean_survey_all_days
 ```
 
 
@@ -86,31 +73,10 @@ head(survey_data)
 3. tt_arrival: Arrival time in class on Tuesdays and Thursdays. This is numeric variable.
 4. mode_of_transport: Mode of transportation used to travel. This is categorical variable.
 
-### Cleaning data 
-```{r}
-survey_data$mode_of_transport <- as.factor(survey_data$mode_of_transport)
-
-clean_survey_sep_days
-typeof(clean_survey_sep_days$distance_km)
-clean_survey_sep_days$distance_km <- as.numeric(clean_survey_sep_days$distance_km)
-
-clean_survey_all_days
-typeof(clean_survey_all_days$distance_km)
-
-dim(survey_data)
-dim(clean_survey_sep_days)
-dim(clean_survey_all_days)
-
-```
 
 ### TABLE OF SUMMARY STATISTICS
 ```{r}
-summary(clean_survey_all_days) %>% 
-  knitr::kable()
-
-summary(clean_survey_sep_days) %>% 
-  knitr::kable()
-
+summary(clean_survey_all_days)
 
 # by mode of transit
 by(clean_survey_all_days, clean_survey_all_days$mode_of_transport, summary)
@@ -146,19 +112,12 @@ clean_survey_sep_days %>%
 clean_survey_sep_days %>% 
   ggplot(aes(x = mw_arrival, y = distance_km)) +
   geom_point() +
-  facet_wrap(~ mode_of_transport)+
-  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
-
-clean_survey_sep_days %>% 
-  ggplot(aes(x = mw_arrival, y = distance_km)) +
-  geom_point() +
   facet_wrap(~ mode_of_transport) +
   geom_smooth(method = "lm", se = F)+
   labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
 ```
 
 ```{r}
-### COLOR INSTEAD OF FACET
 clean_survey_sep_days %>% 
   ggplot(aes(x = mw_arrival, y = distance_km)) +
   geom_point(aes(color = mode_of_transport))+
@@ -168,11 +127,6 @@ clean_survey_sep_days %>%
 
 ```{r}
 ### SCATTERPLOT FOR ALL DAYS, AND FACETED
-
-clean_survey_all_days %>% 
-  ggplot(aes(x = arrival, y = distance_km)) +
-  geom_point()+
-  labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
 
 clean_survey_all_days %>% 
   ggplot(aes(x = arrival, y = distance_km)) +
@@ -210,4 +164,4 @@ clean_survey_all_days %>%
 
 ### Conclusion
 (open to all)
->Maybe - Mode of transit is a direct influencer on both arrival time and distance.
+> Based on the EDA

@@ -4,9 +4,7 @@
 
 **Date:** 2019-03-30
 
-### Survey question (Milestone-1) 
-
-[Milestone 1 writeup](https://github.com/UBC-MDS/survey_arrival_time/blob/master/milestone1.md)
+### Survey question (Milestone-2) 
 
 [Milestone 2 writeup](https://github.com/UBC-MDS/survey_arrival_time/blob/master/milestone2.md)
 

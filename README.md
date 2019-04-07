@@ -10,7 +10,7 @@
 
 [Milestone 2 writeup](https://github.com/UBC-MDS/survey_arrival_time/blob/master/milestone2.md)
 
-Data link [MDS repo](https://github.ubc.ca/MDS-2018-19/DSCI_554_survey_arrival_time)
+Data available at [MDS repo](https://github.ubc.ca/MDS-2018-19/DSCI_554_survey_arrival_time)
 
 #### Authors:
 

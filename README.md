@@ -8,6 +8,10 @@
 
 [Milestone 2 writeup](https://github.com/UBC-MDS/survey_arrival_time/blob/v2.0/milestone2.md)
 
+[private repo with data](https://github.ubc.ca/MDS-2018-19/DSCI_554_survey_arrival_time)
+
+(However, note that the above repository is redundant as we were given permission to host our data in this repo since it has no personally identifying information.)
+
 #### Authors:
 
 | Name | github handle |

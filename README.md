@@ -6,8 +6,8 @@
 
 ### EDA (Milestone 2)
 
-[Milestone 2 writeup](https://github.com/UBC-MDS/survey_arrival_time/blob/v2.0/milestone2.md)
-
+- [Milestone 2 writeup](https://github.com/UBC-MDS/survey_arrival_time/blob/v2.0/milestone2.md)
+- Data in [MDS repo](https://github.ubc.ca/MDS-2018-19/DSCI_554_survey_arrival_time)`
 #### Authors:
 
 | Name | github handle |

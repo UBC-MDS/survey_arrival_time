@@ -19,6 +19,8 @@ library(pander)
 
 ### Collected data
 
+Data was collected by this [survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_eo1whP0fPfWPCw5). The survey aimed to gather information on arrival time to lectures and distance lived from campus. The survey had 56 participants from the MDS students 2018-2019 cohort.
+
 ```{r}
 # Initial survey data
 initial_survey <- read_csv('data/Arrival_Time_April_4_2019_08_20.csv', col_type = cols())
@@ -74,10 +76,12 @@ head(clean_survey_all_days)
 
 
 ### Variables in the data
+
 1. distance_km: Distance travelled in kilometers. This is a numeric variable.
-2. mw_arrival: Arrival time in class on Mondays and Wednesdays. This is a numeric variable.
-3. tt_arrival: Arrival time in class on Tuesdays and Thursdays. This is a numeric variable.
-4. mode_of_transport: Mode of transportation used to travel. This is a categorical variable.
+2. arrival: Arrival time in class on all days, Monday-Thursdays. This is a numeric variable.
+3. mw_arrival: Arrival time in class on Mondays and Wednesdays. This is a numeric variable.
+4. tt_arrival: Arrival time in class on Tuesdays and Thursdays. This is a numeric variable.
+5. mode_of_transport: Mode of transportation used to travel. This is a categorical variable.
 
 
 ### Table of Summary Statistics
@@ -109,48 +113,28 @@ clean_survey_sep_days %>%
 
 ### Exploratory Data Analysis
 
+To start the EDA, we wanted to see what the usual mode of transport of MDS students is.
 
 ```{r}
-### put plots for MW and TT here
-
-
-clean_survey_sep_days %>% 
-  ggplot(aes(x = mw_arrival)) +
-  geom_density() + 
-  facet_wrap(~ mode_of_transport)+
-  labs(x="Arrival time", y="Frequency", title = "Count of student arrival time on Monday Wednesday")
-
-
-clean_survey_sep_days %>% 
-  ggplot(aes(x = tt_arrival)) +
-  geom_density() + 
-  facet_wrap(~ mode_of_transport)+
-  labs(x="Arrival time", y="Frequency", title = "Count of student arrival time on Tuesday Thursday")
-```
-
-
-
-```{r}
-### violin plot for all days, faceted by mode of transport
-clean_survey_mw %>% 
-  ggplot(aes(x = mode_of_transport, y = arrival)) +
-  geom_violin() +
-  geom_jitter(width = .2, alpha = .3)+
-  labs(y="Arrival time", x="Mode of transport", title = "Mode of transport v/s arrival time on (Monday Wednesday)")
-
-clean_survey_tt %>% 
-  ggplot(aes(x = mode_of_transport, y = arrival)) +
-  geom_violin() +
-  geom_jitter(width = .2, alpha = .3)+
-  labs(y="Arrival time", x="Mode of transport", title = "Mode of transport v/s arrival time on (Tuesday Thursday)")
-
-
+clean_survey_sep_days %>%
+  ggplot() +
+  geom_bar(aes(x=mode_of_transport)) +
+  labs(y= "Frequency", x = "Mode of transport", title = "Number of MDS Students using different modes of transport") 
 
 ```
 
+Comparing different modes of transport:
+
+1. The fewest number of students choose to cycle.
+
+2. There are also fewer students who drive to lectures than other modes.
+
+3. The maximum number of students use transit.
+
+4. Many students choose to walk to the lectures but not as many as those who take transit.
 
 
-
+Examining if there is any connection with the distance a student lives from Hugh Dempster to an approximate arrival time in lecture.
 ```{r}
 ### scatterplot for all days grouped together, faceted by mode of transport
 clean_survey_sep_days %>% 
@@ -160,7 +144,40 @@ clean_survey_sep_days %>%
   labs(x="Arrival time", y="Distance(in kms)", title = "Arrival time v/s distance")
 ```
 
+Looking at this graph, we think mode of travel and the distance might affect the arrival time to lectures.
 
+Comparing different modes of transport with distance:
+
+1. Cyclists are very close to on time and live within 15 kilometers.
+
+2. Students who drive have a wide range of arrival times, starting with a few early arrivals, to one student who enters the class last. Nobody who drives lives within 10kms (except one who lives 10 km away).
+
+3. Students who use transit are somewhat varied in arrival times and most arrive within +/- 30 minutes of the lecture. Students who use transit have a wide range of distance starting from 2kms to 20kms (with the exception of two outliers).
+
+4. The students who walk mostly arrive within +/- 10 minutes of the lecture (other than two outliers). They all live on-campus or very close to campus within 2-3km.
+
+
+Examining the arrival time on different days, on Mondays and Wednesdays when the lecture starts at 09:00, and on Tuesdays and Thursdays when the lecture starts at 09:30.
+
+```{r}
+clean_survey_sep_days %>% 
+  ggplot(aes(x = mw_arrival)) +
+  geom_density(aes(fill = "salmon", color = "salmon"), alpha = .3) + 
+  geom_density(aes(x = tt_arrival, fill = "#00BFC4", color = "#00BFC4"), alpha = .3) +
+  facet_wrap(~ mode_of_transport) +
+  labs(x="Arrival time", y="Frequency", title = "Density of student arrival time on Mon & Wed vs Tues & Thurs") +
+  guides(color = FALSE) +
+  scale_fill_identity(name = "days",
+                       breaks = c("salmon", "#00BFC4"),
+                       labels = c("Mon-Wed", "Tues-Thurs"),
+                       guide = "legend")
+
+```
+
+There is only a slight difference in arrival time when the lectures start at 09:00 compared when the lecture starts at 09:30. It is most noticeable for students taking transit.
+
+
+Examining the combined arrival time on all days with different modes of transportation:
 ```{r}
 ### density plot for all days, faceted by mode of transport
 clean_survey_all_days %>% 
@@ -171,14 +188,9 @@ clean_survey_all_days %>%
 ```
 
 
-```{r}
-### boxplot for all days, faceted by mode of transport
-clean_survey_all_days %>% 
-  ggplot(aes(x = mode_of_transport, y = arrival)) +
-  geom_boxplot()+
-  labs(y="Arrival time", x="Mode of transport", title = "Mode of transport v/s arrival time")
-```
 
+
+Let's check mode of transportation and arrival time of all the students:
 ```{r}
 ### violin plot for all days, faceted by mode of transport
 clean_survey_all_days %>% 
@@ -188,6 +200,10 @@ clean_survey_all_days %>%
   labs(y="Arrival time", x="Mode of transport", title = "Mode of transport v/s arrival time")
 ```
 
+
+
+In terms of the mode of transport and arrival time, there are a very small number of students who cycle and all arrive on time. The ones who choose to drive are less in number and their arrival times vary widely from very early, to on-time, to very late. Otherwise, among transit and walking (these two are the most popular mode of transports), students arrive on-time, early and late in a mixed fashion.
+
 ### Conclusion
-(open to all)
-> Based on the EDA
+
+Based on the EDA, we think there is some relation between distance and arrival time of all the students. To investigate this we will fit a linear regression using the distance as the predictor variable and the arrival time as the response variable. We would also like to find out if the mode of transportation affects the arrival time.

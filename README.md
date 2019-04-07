@@ -7,6 +7,8 @@
 ### Survey question (Milestone-1) 
 
 [Milestone 1 writeup](https://github.com/UBC-MDS/survey_arrival_time/blob/master/milestone1.md)
+[Milestone 2 writeup](https://github.com/UBC-MDS/survey_arrival_time/blob/master/milestone2.md)
+Data in [MDS repo](https://github.ubc.ca/MDS-2018-19/DSCI_554_survey_arrival_time)
 
 #### Authors:
 

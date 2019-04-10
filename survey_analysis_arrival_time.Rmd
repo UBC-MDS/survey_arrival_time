@@ -1,0 +1,202 @@
+---
+title: "Survey Analysis Arrival Time"
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+## Libraries
+
+```{r}
+library(tidyverse)
+library(tidybayes)
+library(brms)
+library(broom)
+library(knitr)
+```
+
+```{r}
+clean_survey_all_days <- read_csv('https://raw.githubusercontent.com/UBC-MDS/survey_arrival_time/master/data/clean_survey_responses_all_days.csv')
+clean_survey_sep_days <- read_csv('https://raw.githubusercontent.com/UBC-MDS/survey_arrival_time/master/data/clean_survey_responses_sep_days.csv')
+```
+
+## Without Confounders
+
+### Distance and Arrival Time (Overall)
+
+```{r}
+# Frequentist
+fit_all <- lm(arrival ~ distance_km, data = clean_survey_all_days)
+
+tidy(fit_all) %>% 
+    kable()
+```
+
+
+```{r}
+fit_all_bayes <- brm(arrival ~ distance_km, data = clean_survey_all_days, iter = 5000, cores = -1)
+
+# Returns the 95% estimates
+fit_all_bayes %>%
+    gather_draws(b_Intercept, b_distance_km, sigma) %>%
+    median_qi() %>%
+    kable()
+```
+
+```{r}
+fit_all_bayes %>%
+    gather_draws(b_Intercept, b_distance_km) %>%
+    ggplot(aes(.value)) +
+    geom_density() +
+    facet_wrap(~ .variable, scales = 'free') +
+    labs(x = 'Value',
+         title = 'Bayesian All Days Model')
+```
+
+### Distance and Arrival Time (Monday & Wednesday)
+
+```{r}
+fit_mw <- lm(mw_arrival ~ distance_km, data = clean_survey_sep_days)
+
+tidy(fit_mw) %>% 
+    kable()
+```
+
+```{r}
+fit_mw_bayes <- brm(mw_arrival ~ distance_km, data = clean_survey_sep_days, iter = 5000, cores = -1)
+
+fit_mw_bayes %>%
+    gather_draws(b_Intercept, b_distance_km, sigma) %>%
+    median_qi() %>%
+    kable()
+```
+
+```{r}
+fit_mw_bayes %>%
+    gather_draws(b_Intercept, b_distance_km) %>%
+    ggplot(aes(.value)) +
+    geom_density() +
+    facet_wrap(~ .variable, scales = 'free') +
+    labs(x = 'Value',
+         title = 'Bayesian Monday & Wednesday Model')
+```
+
+### Distance and Arrival Time (Tuesday and Thursdays)
+
+```{r}
+fit_tt <- lm(tt_arrival ~ distance_km, data = clean_survey_sep_days)
+
+tidy(fit_tt) %>% 
+    kable()
+```
+
+```{r}
+fit_tt_bayes <- brm(tt_arrival ~ distance_km, data = clean_survey_sep_days, iter = 5000, cores = -1)
+
+fit_tt_bayes %>%
+    gather_draws(b_Intercept, b_distance_km, sigma) %>%
+    median_qi() %>%
+    kable()
+```
+
+```{r}
+fit_tt_bayes %>%
+    gather_draws(b_Intercept, b_distance_km) %>%
+    ggplot(aes(.value)) +
+    geom_density() +
+    facet_wrap(~ .variable, scales = 'free') +
+    labs(x = 'Value',
+         title = 'Bayesian Tuesday & Thursday Model')
+```
+
+## With Confounders
+
+### Distance and Arrival Time (Overall)
+
+```{r}
+fit_all_transp <- lm(arrival ~ distance_km + mode_of_transport, data = clean_survey_all_days)
+
+tidy(fit_all_transp) %>% 
+    kable()
+```
+
+
+```{r}
+fit_all_bayes_transp <- brm(arrival ~ distance_km + mode_of_transport, data = clean_survey_all_days, iter = 5000, cores = -1)
+
+# Returns the 95% estimates
+fit_all_bayes_transp %>%
+    gather_draws(b_Intercept, b_distance_km, sigma) %>%
+    median_qi() %>%
+    kable()
+```
+
+```{r}
+fit_all_bayes_transp %>%
+    gather_draws(b_Intercept, b_distance_km) %>%
+    ggplot(aes(.value)) +
+    geom_density() +
+    facet_wrap(~ .variable, scales = 'free') +
+    labs(x = 'Value',
+         title = 'Bayesian All Days Model w Confounder')
+```
+
+### Distance and Arrival Time (Monday & Wednesday)
+
+```{r}
+fit_mw_transp <- lm(mw_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days)
+
+tidy(fit_mw_transp) %>% 
+    kable()
+```
+
+```{r}
+fit_mw_bayes_transp <- brm(mw_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days, iter = 5000, cores = -1)
+
+fit_mw_bayes_transp %>%
+    gather_draws(b_Intercept, b_distance_km, sigma) %>%
+    median_qi() %>%
+    kable()
+```
+
+```{r}
+fit_mw_bayes_transp %>%
+    gather_draws(b_Intercept, b_distance_km) %>%
+    ggplot(aes(.value)) +
+    geom_density() +
+    facet_wrap(~ .variable, scales = 'free') +
+    labs(x = 'Value',
+         title = 'Bayesian Monday & Wednesday Model w Confounder')
+```
+
+### Distance and Arrival Time (Tuesday and Thursdays)
+
+```{r}
+fit_tt_transp <- lm(tt_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days)
+
+tidy(fit_tt_transp) %>% 
+    kable()
+```
+
+```{r}
+fit_tt_bayes_transp <- brm(tt_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days, iter = 5000, cores = -1)
+
+fit_tt_bayes_transp %>%
+    gather_draws(b_Intercept, b_distance_km, sigma) %>%
+    median_qi() %>%
+    kable()
+```
+
+```{r}
+fit_tt_bayes_transp %>%
+    gather_draws(b_Intercept, b_distance_km) %>%
+    ggplot(aes(.value)) +
+    geom_density() +
+    facet_wrap(~ .variable, scales = 'free') +
+    labs(x = 'Value',
+         title = 'Bayesian Tuesday & Thursday Model w Confounder')
+```

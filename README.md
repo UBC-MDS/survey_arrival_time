@@ -1,12 +1,14 @@
-<img src="imgs/logo.png" align="right" height="140" width="200"/>
+<img src="imgs/logo.png" align="right" height="160" width="220"/>
 
 # Arrival Time Survey
 
 **Date:** 2019-04-06
 
-### EDA (Milestone 2)
+**License:** [MIT](https://opensource.org/licenses/MIT)
 
-[Milestone 2 writeup](https://github.com/UBC-MDS/survey_arrival_time/blob/v2.0/milestone2.md)
+### Survey Report
+
+
 
 Data available at [MDS repo](https://github.ubc.ca/MDS-2018-19/DSCI_554_survey_arrival_time)
 

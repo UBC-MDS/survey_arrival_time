@@ -62,8 +62,13 @@ We performed initial [exploratory data
 analysis](https://github.com/UBC-MDS/survey_arrival_time/blob/v2.0/milestone2.md)
 on our data.
 
-To analyze the data, we consider 3 groups: - all days grouped together -
-Mondays and Wednesdays together - Tuesdays and Thursdays together
+To analyze the data, we consider 3 groups:
+
+  - all days grouped together
+
+  - Mondays and Wednesdays together
+
+  - Tuesdays and Thursdays together
 
 Below we fit a linear regression using the distance as the predictor
 variable and the arrival time as the response variable. We compare this
@@ -78,32 +83,85 @@ ANOVA test, and again validate using a Bayesian linear regression.
 # EDA
 
 ``` r
-### Exploratory Data Analysis
 plot1 <- clean_survey_all_days %>%
   ggplot(height = 17 , width = 2) +
   geom_histogram(aes(x=distance_km)) + 
   theme(axis.title=element_text(size=10),
         plot.title = element_text(size = 10, face = "bold")) +  
-  labs(y= "Frequency", x = "Distance (in km)", title = "Number of MDS Students v/s their distance of travel") 
+  labs(y= "Frequency", x = "Distance (in km)", title = "Distribution of Distance Lived From Campus (km)") 
 
 plot2 <- clean_survey_all_days %>%
   ggplot() +
   geom_histogram(aes(x=arrival)) +  
   theme(axis.title=element_text(size=10),
         plot.title = element_text(size = 10, face = "bold")) +  
-  labs(y= "Frequency", x = "Arrival time", title = "Number of MDS Students v/s their arrival time") 
+  labs(y= "Frequency", x = "Arrival time", title = "Distribution of Arrival Time (minutes)") 
 
-plot3 <- clean_survey_sep_days %>%
-  ggplot(size = 10) +
+grid.arrange(plot1, plot2, ncol=2)
+```
+
+![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+We can see that the majority of students live within 15 kilometers of
+campus, and that the majority arrive within 30 mintues before and 30
+minutes after the start of the lecture.
+
+``` r
+plot3 <- clean_survey_all_days %>%
+  ggplot() +
   geom_bar(aes(x=mode_of_transport)) +
   theme(axis.title=element_text(size=10),
         plot.title = element_text(size = 10, face = "bold")) +  
   labs(y= "Frequency", x = "Mode of transport", title = "Number of MDS Students using different modes of transport") 
-
-grid.arrange(plot1, plot2, plot3, ncol=3)
+plot3
 ```
 
-![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+Comparing modes of transit, we see that transit is the most common form
+of transportation, while cycling is the least.
+
+Does there appear to be a relationship between arrival time and distance
+lived from campus? An intial plot shows us:
+
+``` r
+plot4 <- clean_survey_all_days %>%
+  ggplot(aes(x = arrival, y = distance_km)) +
+  geom_point() +
+  theme(axis.title=element_text(size=10),
+        plot.title = element_text(size = 10, face = "bold")) +  
+  labs(x = "Arrival time (minutes)", y = "Distance (km)", title = "Arrival Time vs Distance Lived From Campus") 
+plot4
+```
+
+![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+It’s difficult to discern from this plot so we will further explore this
+question in the analysis below.
+
+``` r
+plot5 <- clean_survey_sep_days %>% 
+  ggplot(aes(x = mw_arrival)) +
+  geom_density(aes(fill = "salmon", color = "salmon"), alpha = .3) + 
+  geom_density(aes(x = tt_arrival, fill = "#00BFC4", color = "#00BFC4"), alpha = .3) +
+  facet_wrap(~ mode_of_transport) +
+  theme(axis.title=element_text(size=10),
+        plot.title = element_text(size = 10, face = "bold")) +
+  labs(x="Arrival time", y="Frequency", title = "Density of student arrival time on Mon & Wed vs Tues & Thurs") +
+  guides(color = FALSE) +
+  scale_fill_identity(name = "days",
+                       breaks = c("salmon", "#00BFC4"),
+                       labels = c("Mon-Wed", "Tues-Thurs"),
+                       guide = "legend")
+plot5
+```
+
+![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+Comparing this distribution of arrival times on Mondays and Wednesday vs
+Tuesdays and Thursdays reveals that there is only a slight difference in
+arrival time when the lectures start at 09:00 compared when the lecture
+starts at 09:30. It is most noticeable for students taking transit.
 
 # Analysis and results
 
@@ -124,110 +182,11 @@ tidy(fit_all) %>%
 | (Intercept)  |   6.7567108 | 3.8362921 |   1.761261 | 0.0809729 |
 | distance\_km | \-0.9445517 | 0.3466962 | \-2.724436 | 0.0074945 |
 
-``` r
-fit_all_bayes <- brm(arrival ~ distance_km, data = clean_survey_all_days, iter = 5000, cores = -1)
-```
+As per frequentist approach there is an association between distance and
+arrival time with a confidence interval of 95% (-1.604, -0.277).
 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 1).
-    ## Chain 1: 
-    ## Chain 1: Gradient evaluation took 5.5e-05 seconds
-    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.55 seconds.
-    ## Chain 1: Adjust your expectations accordingly!
-    ## Chain 1: 
-    ## Chain 1: 
-    ## Chain 1: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 1: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 1: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 1: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 1: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 1: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 1: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 1: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 1: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 1: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 1: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 1: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 1: 
-    ## Chain 1:  Elapsed Time: 0.117098 seconds (Warm-up)
-    ## Chain 1:                0.150493 seconds (Sampling)
-    ## Chain 1:                0.267591 seconds (Total)
-    ## Chain 1: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 2).
-    ## Chain 2: 
-    ## Chain 2: Gradient evaluation took 1.3e-05 seconds
-    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
-    ## Chain 2: Adjust your expectations accordingly!
-    ## Chain 2: 
-    ## Chain 2: 
-    ## Chain 2: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 2: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 2: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 2: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 2: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 2: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 2: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 2: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 2: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 2: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 2: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 2: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 2: 
-    ## Chain 2:  Elapsed Time: 0.117942 seconds (Warm-up)
-    ## Chain 2:                0.463689 seconds (Sampling)
-    ## Chain 2:                0.581631 seconds (Total)
-    ## Chain 2: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 3).
-    ## Chain 3: 
-    ## Chain 3: Gradient evaluation took 1.2e-05 seconds
-    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
-    ## Chain 3: Adjust your expectations accordingly!
-    ## Chain 3: 
-    ## Chain 3: 
-    ## Chain 3: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 3: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 3: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 3: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 3: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 3: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 3: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 3: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 3: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 3: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 3: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 3: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 3: 
-    ## Chain 3:  Elapsed Time: 0.125671 seconds (Warm-up)
-    ## Chain 3:                0.214929 seconds (Sampling)
-    ## Chain 3:                0.3406 seconds (Total)
-    ## Chain 3: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 4).
-    ## Chain 4: 
-    ## Chain 4: Gradient evaluation took 1.1e-05 seconds
-    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
-    ## Chain 4: Adjust your expectations accordingly!
-    ## Chain 4: 
-    ## Chain 4: 
-    ## Chain 4: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 4: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 4: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 4: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 4: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 4: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 4: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 4: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 4: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 4: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 4: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 4: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 4: 
-    ## Chain 4:  Elapsed Time: 0.112736 seconds (Warm-up)
-    ## Chain 4:                0.266914 seconds (Sampling)
-    ## Chain 4:                0.37965 seconds (Total)
-    ## Chain 4:
+For every increase of 1 km lived from campus, the expected change in
+arrival time is early by almost 1 minute.
 
 ``` r
 # Returns the 95% estimates
@@ -237,11 +196,13 @@ fit_all_bayes %>%
     kable()
 ```
 
-| .variable       |      .value |      .lower |     .upper | .width | .point | .interval |
-| :-------------- | ----------: | ----------: | ---------: | -----: | :----- | :-------- |
-| b\_distance\_km | \-0.9498449 | \-1.6309889 | \-0.269201 |   0.95 | median | qi        |
-| b\_Intercept    |   6.8294891 | \-0.5314202 |  14.263183 |   0.95 | median | qi        |
-| sigma           |  27.9048569 |  24.6425481 |  31.975787 |   0.95 | median | qi        |
+| .variable       |      .value |      .lower |      .upper | .width | .point | .interval |
+| :-------------- | ----------: | ----------: | ----------: | -----: | :----- | :-------- |
+| b\_distance\_km | \-0.9429601 | \-1.6205055 | \-0.2639359 |   0.95 | median | qi        |
+| b\_Intercept    |   6.8211231 | \-0.4642215 |  14.0761122 |   0.95 | median | qi        |
+| sigma           |  27.8864838 |  24.5390591 |  32.0351478 |   0.95 | median | qi        |
+
+As per bayesian approach (Ian could you please take over from here)
 
 ``` r
 fit_all_bayes %>%
@@ -253,7 +214,7 @@ fit_all_bayes %>%
          title = 'Bayesian All Days Model')
 ```
 
-![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ### Distance and Arrival Time (Monday & Wednesday)
 
@@ -270,111 +231,6 @@ tidy(fit_mw) %>%
 | distance\_km | \-0.8732192 | 0.4440297 | \-1.966578 | 0.0543802 |
 
 ``` r
-fit_mw_bayes <- brm(mw_arrival ~ distance_km, data = clean_survey_sep_days, iter = 5000, cores = -1)
-```
-
-    ## 
-    ## SAMPLING FOR MODEL '8383dc356debc299916ea59c2351681d' NOW (CHAIN 1).
-    ## Chain 1: 
-    ## Chain 1: Gradient evaluation took 3.4e-05 seconds
-    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.34 seconds.
-    ## Chain 1: Adjust your expectations accordingly!
-    ## Chain 1: 
-    ## Chain 1: 
-    ## Chain 1: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 1: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 1: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 1: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 1: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 1: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 1: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 1: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 1: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 1: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 1: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 1: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 1: 
-    ## Chain 1:  Elapsed Time: 0.113204 seconds (Warm-up)
-    ## Chain 1:                0.141289 seconds (Sampling)
-    ## Chain 1:                0.254493 seconds (Total)
-    ## Chain 1: 
-    ## 
-    ## SAMPLING FOR MODEL '8383dc356debc299916ea59c2351681d' NOW (CHAIN 2).
-    ## Chain 2: 
-    ## Chain 2: Gradient evaluation took 1e-05 seconds
-    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
-    ## Chain 2: Adjust your expectations accordingly!
-    ## Chain 2: 
-    ## Chain 2: 
-    ## Chain 2: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 2: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 2: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 2: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 2: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 2: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 2: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 2: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 2: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 2: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 2: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 2: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 2: 
-    ## Chain 2:  Elapsed Time: 0.101072 seconds (Warm-up)
-    ## Chain 2:                0.09333 seconds (Sampling)
-    ## Chain 2:                0.194402 seconds (Total)
-    ## Chain 2: 
-    ## 
-    ## SAMPLING FOR MODEL '8383dc356debc299916ea59c2351681d' NOW (CHAIN 3).
-    ## Chain 3: 
-    ## Chain 3: Gradient evaluation took 1e-05 seconds
-    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
-    ## Chain 3: Adjust your expectations accordingly!
-    ## Chain 3: 
-    ## Chain 3: 
-    ## Chain 3: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 3: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 3: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 3: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 3: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 3: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 3: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 3: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 3: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 3: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 3: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 3: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 3: 
-    ## Chain 3:  Elapsed Time: 0.112609 seconds (Warm-up)
-    ## Chain 3:                0.088354 seconds (Sampling)
-    ## Chain 3:                0.200963 seconds (Total)
-    ## Chain 3: 
-    ## 
-    ## SAMPLING FOR MODEL '8383dc356debc299916ea59c2351681d' NOW (CHAIN 4).
-    ## Chain 4: 
-    ## Chain 4: Gradient evaluation took 1e-05 seconds
-    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
-    ## Chain 4: Adjust your expectations accordingly!
-    ## Chain 4: 
-    ## Chain 4: 
-    ## Chain 4: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 4: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 4: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 4: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 4: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 4: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 4: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 4: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 4: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 4: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 4: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 4: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 4: 
-    ## Chain 4:  Elapsed Time: 0.104681 seconds (Warm-up)
-    ## Chain 4:                0.088624 seconds (Sampling)
-    ## Chain 4:                0.193305 seconds (Total)
-    ## Chain 4:
-
-``` r
 fit_mw_bayes %>%
     gather_draws(b_Intercept, b_distance_km, sigma) %>%
     median_qi() %>%
@@ -383,9 +239,9 @@ fit_mw_bayes %>%
 
 | .variable       |      .value |     .lower |     .upper | .width | .point | .interval |
 | :-------------- | ----------: | ---------: | ---------: | -----: | :----- | :-------- |
-| b\_distance\_km | \-0.8705153 | \-1.747040 |  0.0150409 |   0.95 | median | qi        |
-| b\_Intercept    |   7.0456612 | \-2.296062 | 16.5065617 |   0.95 | median | qi        |
-| sigma           |  25.1560300 |  21.179783 | 30.6182504 |   0.95 | median | qi        |
+| b\_distance\_km | \-0.8735837 | \-1.737936 |  0.0158947 |   0.95 | median | qi        |
+| b\_Intercept    |   7.1398526 | \-2.220549 | 16.2738603 |   0.95 | median | qi        |
+| sigma           |  25.1549734 |  21.084387 | 30.4964136 |   0.95 | median | qi        |
 
 ``` r
 fit_mw_bayes %>%
@@ -397,7 +253,7 @@ fit_mw_bayes %>%
          title = 'Bayesian Monday & Wednesday Model')
 ```
 
-![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ### Distance and Arrival Time (Tuesday and Thursdays)
 
@@ -414,111 +270,6 @@ tidy(fit_tt) %>%
 | distance\_km | \-1.015884 | 0.5404548 | \-1.879684 | 0.0655509 |
 
 ``` r
-fit_tt_bayes <- brm(tt_arrival ~ distance_km, data = clean_survey_sep_days, iter = 5000, cores = -1)
-```
-
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 1).
-    ## Chain 1: 
-    ## Chain 1: Gradient evaluation took 3.3e-05 seconds
-    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.33 seconds.
-    ## Chain 1: Adjust your expectations accordingly!
-    ## Chain 1: 
-    ## Chain 1: 
-    ## Chain 1: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 1: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 1: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 1: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 1: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 1: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 1: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 1: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 1: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 1: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 1: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 1: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 1: 
-    ## Chain 1:  Elapsed Time: 0.10027 seconds (Warm-up)
-    ## Chain 1:                0.096926 seconds (Sampling)
-    ## Chain 1:                0.197196 seconds (Total)
-    ## Chain 1: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 2).
-    ## Chain 2: 
-    ## Chain 2: Gradient evaluation took 1e-05 seconds
-    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
-    ## Chain 2: Adjust your expectations accordingly!
-    ## Chain 2: 
-    ## Chain 2: 
-    ## Chain 2: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 2: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 2: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 2: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 2: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 2: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 2: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 2: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 2: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 2: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 2: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 2: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 2: 
-    ## Chain 2:  Elapsed Time: 0.096889 seconds (Warm-up)
-    ## Chain 2:                0.250453 seconds (Sampling)
-    ## Chain 2:                0.347342 seconds (Total)
-    ## Chain 2: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 3).
-    ## Chain 3: 
-    ## Chain 3: Gradient evaluation took 1.1e-05 seconds
-    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
-    ## Chain 3: Adjust your expectations accordingly!
-    ## Chain 3: 
-    ## Chain 3: 
-    ## Chain 3: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 3: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 3: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 3: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 3: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 3: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 3: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 3: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 3: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 3: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 3: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 3: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 3: 
-    ## Chain 3:  Elapsed Time: 0.112657 seconds (Warm-up)
-    ## Chain 3:                0.097533 seconds (Sampling)
-    ## Chain 3:                0.21019 seconds (Total)
-    ## Chain 3: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 4).
-    ## Chain 4: 
-    ## Chain 4: Gradient evaluation took 9e-06 seconds
-    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.09 seconds.
-    ## Chain 4: Adjust your expectations accordingly!
-    ## Chain 4: 
-    ## Chain 4: 
-    ## Chain 4: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 4: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 4: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 4: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 4: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 4: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 4: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 4: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 4: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 4: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 4: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 4: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 4: 
-    ## Chain 4:  Elapsed Time: 0.101043 seconds (Warm-up)
-    ## Chain 4:                0.093316 seconds (Sampling)
-    ## Chain 4:                0.194359 seconds (Total)
-    ## Chain 4:
-
-``` r
 fit_tt_bayes %>%
     gather_draws(b_Intercept, b_distance_km, sigma) %>%
     median_qi() %>%
@@ -527,9 +278,9 @@ fit_tt_bayes %>%
 
 | .variable       |     .value |     .lower |     .upper | .width | .point | .interval |
 | :-------------- | ---------: | ---------: | ---------: | -----: | :----- | :-------- |
-| b\_distance\_km | \-1.016316 | \-2.069501 |  0.0438733 |   0.95 | median | qi        |
-| b\_Intercept    |   6.943948 | \-3.977560 | 18.2564401 |   0.95 | median | qi        |
-| sigma           |  30.548283 |  25.643995 | 37.2849633 |   0.95 | median | qi        |
+| b\_distance\_km | \-1.012167 | \-2.062502 |  0.0491413 |   0.95 | median | qi        |
+| b\_Intercept    |   6.989803 | \-4.225077 | 18.2405997 |   0.95 | median | qi        |
+| sigma           |  30.530694 |  25.633246 | 37.1528404 |   0.95 | median | qi        |
 
 ``` r
 fit_tt_bayes %>%
@@ -541,7 +292,7 @@ fit_tt_bayes %>%
          title = 'Bayesian Tuesday & Thursday Model')
 ```
 
-![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 ## With Confounders
 
@@ -563,111 +314,6 @@ tidy(fit_all_transp) %>%
 | mode\_of\_transportWalking |  \-1.3287860 | 11.3753639 | \-0.1168126 | 0.9072275 |
 
 ``` r
-fit_all_bayes_transp <- brm(arrival ~ distance_km + mode_of_transport, data = clean_survey_all_days, iter = 5000, cores = -1)
-```
-
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 1).
-    ## Chain 1: 
-    ## Chain 1: Gradient evaluation took 3.6e-05 seconds
-    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.36 seconds.
-    ## Chain 1: Adjust your expectations accordingly!
-    ## Chain 1: 
-    ## Chain 1: 
-    ## Chain 1: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 1: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 1: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 1: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 1: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 1: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 1: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 1: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 1: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 1: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 1: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 1: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 1: 
-    ## Chain 1:  Elapsed Time: 0.504885 seconds (Warm-up)
-    ## Chain 1:                0.271601 seconds (Sampling)
-    ## Chain 1:                0.776486 seconds (Total)
-    ## Chain 1: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 2).
-    ## Chain 2: 
-    ## Chain 2: Gradient evaluation took 1.3e-05 seconds
-    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.13 seconds.
-    ## Chain 2: Adjust your expectations accordingly!
-    ## Chain 2: 
-    ## Chain 2: 
-    ## Chain 2: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 2: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 2: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 2: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 2: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 2: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 2: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 2: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 2: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 2: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 2: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 2: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 2: 
-    ## Chain 2:  Elapsed Time: 0.473089 seconds (Warm-up)
-    ## Chain 2:                0.256448 seconds (Sampling)
-    ## Chain 2:                0.729537 seconds (Total)
-    ## Chain 2: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 3).
-    ## Chain 3: 
-    ## Chain 3: Gradient evaluation took 1.2e-05 seconds
-    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.12 seconds.
-    ## Chain 3: Adjust your expectations accordingly!
-    ## Chain 3: 
-    ## Chain 3: 
-    ## Chain 3: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 3: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 3: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 3: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 3: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 3: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 3: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 3: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 3: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 3: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 3: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 3: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 3: 
-    ## Chain 3:  Elapsed Time: 0.452204 seconds (Warm-up)
-    ## Chain 3:                0.246807 seconds (Sampling)
-    ## Chain 3:                0.699011 seconds (Total)
-    ## Chain 3: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 4).
-    ## Chain 4: 
-    ## Chain 4: Gradient evaluation took 1.4e-05 seconds
-    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.14 seconds.
-    ## Chain 4: Adjust your expectations accordingly!
-    ## Chain 4: 
-    ## Chain 4: 
-    ## Chain 4: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 4: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 4: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 4: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 4: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 4: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 4: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 4: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 4: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 4: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 4: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 4: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 4: 
-    ## Chain 4:  Elapsed Time: 0.438234 seconds (Warm-up)
-    ## Chain 4:                0.266682 seconds (Sampling)
-    ## Chain 4:                0.704916 seconds (Total)
-    ## Chain 4:
-
-``` r
 # Returns the 95% estimates
 fit_all_bayes_transp %>%
     gather_draws(b_Intercept, b_distance_km, sigma) %>%
@@ -677,9 +323,9 @@ fit_all_bayes_transp %>%
 
 | .variable       |      .value |      .lower |     .upper | .width | .point | .interval |
 | :-------------- | ----------: | ----------: | ---------: | -----: | :----- | :-------- |
-| b\_distance\_km | \-0.8106711 |  \-1.718153 |  0.0963934 |   0.95 | median | qi        |
-| b\_Intercept    |   6.9902241 | \-13.732438 | 27.4157229 |   0.95 | median | qi        |
-| sigma           |  28.0287801 |   24.722315 | 32.1747158 |   0.95 | median | qi        |
+| b\_distance\_km | \-0.7982526 |  \-1.684084 |  0.0955237 |   0.95 | median | qi        |
+| b\_Intercept    |   7.1047176 | \-13.520277 | 27.4972762 |   0.95 | median | qi        |
+| sigma           |  28.0312226 |   24.820313 | 32.1245977 |   0.95 | median | qi        |
 
 ``` r
 fit_all_bayes_transp %>%
@@ -691,7 +337,7 @@ fit_all_bayes_transp %>%
          title = 'Bayesian All Days Model w Confounder')
 ```
 
-![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 ### Distance and Arrival Time (Monday & Wednesday)
 
@@ -711,111 +357,6 @@ tidy(fit_mw_transp) %>%
 | mode\_of\_transportWalking |   0.2710767 | 14.8789974 |   0.0182187 | 0.9855354 |
 
 ``` r
-fit_mw_bayes_transp <- brm(mw_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days, iter = 5000, cores = -1)
-```
-
-    ## 
-    ## SAMPLING FOR MODEL '8383dc356debc299916ea59c2351681d' NOW (CHAIN 1).
-    ## Chain 1: 
-    ## Chain 1: Gradient evaluation took 3.3e-05 seconds
-    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.33 seconds.
-    ## Chain 1: Adjust your expectations accordingly!
-    ## Chain 1: 
-    ## Chain 1: 
-    ## Chain 1: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 1: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 1: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 1: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 1: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 1: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 1: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 1: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 1: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 1: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 1: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 1: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 1: 
-    ## Chain 1:  Elapsed Time: 0.37259 seconds (Warm-up)
-    ## Chain 1:                0.20827 seconds (Sampling)
-    ## Chain 1:                0.58086 seconds (Total)
-    ## Chain 1: 
-    ## 
-    ## SAMPLING FOR MODEL '8383dc356debc299916ea59c2351681d' NOW (CHAIN 2).
-    ## Chain 2: 
-    ## Chain 2: Gradient evaluation took 2.1e-05 seconds
-    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.21 seconds.
-    ## Chain 2: Adjust your expectations accordingly!
-    ## Chain 2: 
-    ## Chain 2: 
-    ## Chain 2: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 2: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 2: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 2: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 2: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 2: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 2: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 2: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 2: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 2: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 2: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 2: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 2: 
-    ## Chain 2:  Elapsed Time: 0.32559 seconds (Warm-up)
-    ## Chain 2:                0.184298 seconds (Sampling)
-    ## Chain 2:                0.509888 seconds (Total)
-    ## Chain 2: 
-    ## 
-    ## SAMPLING FOR MODEL '8383dc356debc299916ea59c2351681d' NOW (CHAIN 3).
-    ## Chain 3: 
-    ## Chain 3: Gradient evaluation took 1e-05 seconds
-    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
-    ## Chain 3: Adjust your expectations accordingly!
-    ## Chain 3: 
-    ## Chain 3: 
-    ## Chain 3: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 3: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 3: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 3: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 3: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 3: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 3: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 3: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 3: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 3: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 3: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 3: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 3: 
-    ## Chain 3:  Elapsed Time: 0.360704 seconds (Warm-up)
-    ## Chain 3:                0.193971 seconds (Sampling)
-    ## Chain 3:                0.554675 seconds (Total)
-    ## Chain 3: 
-    ## 
-    ## SAMPLING FOR MODEL '8383dc356debc299916ea59c2351681d' NOW (CHAIN 4).
-    ## Chain 4: 
-    ## Chain 4: Gradient evaluation took 1.1e-05 seconds
-    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
-    ## Chain 4: Adjust your expectations accordingly!
-    ## Chain 4: 
-    ## Chain 4: 
-    ## Chain 4: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 4: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 4: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 4: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 4: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 4: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 4: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 4: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 4: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 4: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 4: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 4: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 4: 
-    ## Chain 4:  Elapsed Time: 0.341822 seconds (Warm-up)
-    ## Chain 4:                0.189786 seconds (Sampling)
-    ## Chain 4:                0.531608 seconds (Total)
-    ## Chain 4:
-
-``` r
 fit_mw_bayes_transp %>%
     gather_draws(b_Intercept, b_distance_km, sigma) %>%
     median_qi() %>%
@@ -824,9 +365,9 @@ fit_mw_bayes_transp %>%
 
 | .variable       |      .value |      .lower |     .upper | .width | .point | .interval |
 | :-------------- | ----------: | ----------: | ---------: | -----: | :----- | :-------- |
-| b\_distance\_km | \-0.6893717 |  \-1.895912 |  0.4881487 |   0.95 | median | qi        |
-| b\_Intercept    |   7.7905653 | \-18.766596 | 34.1716285 |   0.95 | median | qi        |
-| sigma           |  25.7713736 |   21.551884 | 31.5258271 |   0.95 | median | qi        |
+| b\_distance\_km | \-0.6922013 |  \-1.871178 |  0.4981872 |   0.95 | median | qi        |
+| b\_Intercept    |   7.4398559 | \-19.677455 | 34.0399350 |   0.95 | median | qi        |
+| sigma           |  25.7666860 |   21.505672 | 31.5487118 |   0.95 | median | qi        |
 
 ``` r
 fit_mw_bayes_transp %>%
@@ -838,7 +379,7 @@ fit_mw_bayes_transp %>%
          title = 'Bayesian Monday & Wednesday Model w Confounder')
 ```
 
-![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 ### Distance and Arrival Time (Tuesday and Thursdays)
 
@@ -858,122 +399,17 @@ tidy(fit_tt_transp) %>%
 | mode\_of\_transportWalking |  \-2.9286487 | 17.7833107 | \-0.1646852 | 0.8698427 |
 
 ``` r
-fit_tt_bayes_transp <- brm(tt_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days, iter = 5000, cores = -1)
-```
-
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 1).
-    ## Chain 1: 
-    ## Chain 1: Gradient evaluation took 3.8e-05 seconds
-    ## Chain 1: 1000 transitions using 10 leapfrog steps per transition would take 0.38 seconds.
-    ## Chain 1: Adjust your expectations accordingly!
-    ## Chain 1: 
-    ## Chain 1: 
-    ## Chain 1: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 1: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 1: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 1: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 1: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 1: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 1: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 1: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 1: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 1: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 1: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 1: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 1: 
-    ## Chain 1:  Elapsed Time: 0.356949 seconds (Warm-up)
-    ## Chain 1:                0.190586 seconds (Sampling)
-    ## Chain 1:                0.547535 seconds (Total)
-    ## Chain 1: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 2).
-    ## Chain 2: 
-    ## Chain 2: Gradient evaluation took 1e-05 seconds
-    ## Chain 2: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
-    ## Chain 2: Adjust your expectations accordingly!
-    ## Chain 2: 
-    ## Chain 2: 
-    ## Chain 2: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 2: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 2: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 2: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 2: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 2: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 2: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 2: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 2: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 2: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 2: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 2: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 2: 
-    ## Chain 2:  Elapsed Time: 0.380756 seconds (Warm-up)
-    ## Chain 2:                0.198286 seconds (Sampling)
-    ## Chain 2:                0.579042 seconds (Total)
-    ## Chain 2: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 3).
-    ## Chain 3: 
-    ## Chain 3: Gradient evaluation took 1.1e-05 seconds
-    ## Chain 3: 1000 transitions using 10 leapfrog steps per transition would take 0.11 seconds.
-    ## Chain 3: Adjust your expectations accordingly!
-    ## Chain 3: 
-    ## Chain 3: 
-    ## Chain 3: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 3: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 3: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 3: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 3: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 3: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 3: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 3: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 3: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 3: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 3: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 3: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 3: 
-    ## Chain 3:  Elapsed Time: 0.345077 seconds (Warm-up)
-    ## Chain 3:                0.201534 seconds (Sampling)
-    ## Chain 3:                0.546611 seconds (Total)
-    ## Chain 3: 
-    ## 
-    ## SAMPLING FOR MODEL '39b50f67d47eaaf0a7b8a729349e5ded' NOW (CHAIN 4).
-    ## Chain 4: 
-    ## Chain 4: Gradient evaluation took 1e-05 seconds
-    ## Chain 4: 1000 transitions using 10 leapfrog steps per transition would take 0.1 seconds.
-    ## Chain 4: Adjust your expectations accordingly!
-    ## Chain 4: 
-    ## Chain 4: 
-    ## Chain 4: Iteration:    1 / 5000 [  0%]  (Warmup)
-    ## Chain 4: Iteration:  500 / 5000 [ 10%]  (Warmup)
-    ## Chain 4: Iteration: 1000 / 5000 [ 20%]  (Warmup)
-    ## Chain 4: Iteration: 1500 / 5000 [ 30%]  (Warmup)
-    ## Chain 4: Iteration: 2000 / 5000 [ 40%]  (Warmup)
-    ## Chain 4: Iteration: 2500 / 5000 [ 50%]  (Warmup)
-    ## Chain 4: Iteration: 2501 / 5000 [ 50%]  (Sampling)
-    ## Chain 4: Iteration: 3000 / 5000 [ 60%]  (Sampling)
-    ## Chain 4: Iteration: 3500 / 5000 [ 70%]  (Sampling)
-    ## Chain 4: Iteration: 4000 / 5000 [ 80%]  (Sampling)
-    ## Chain 4: Iteration: 4500 / 5000 [ 90%]  (Sampling)
-    ## Chain 4: Iteration: 5000 / 5000 [100%]  (Sampling)
-    ## Chain 4: 
-    ## Chain 4:  Elapsed Time: 0.371126 seconds (Warm-up)
-    ## Chain 4:                0.202915 seconds (Sampling)
-    ## Chain 4:                0.574041 seconds (Total)
-    ## Chain 4:
-
-``` r
 fit_tt_bayes_transp %>%
     gather_draws(b_Intercept, b_distance_km, sigma) %>%
     median_qi() %>%
     kable()
 ```
 
-| .variable       |      .value |      .lower |     .upper | .width | .point | .interval |
-| :-------------- | ----------: | ----------: | ---------: | -----: | :----- | :-------- |
-| b\_distance\_km | \-0.9039387 |  \-2.302891 |  0.4958573 |   0.95 | median | qi        |
-| b\_Intercept    |   6.4467648 | \-25.227833 | 37.7701462 |   0.95 | median | qi        |
-| sigma           |  30.7463665 |   25.725151 | 37.6172060 |   0.95 | median | qi        |
+| .variable       |     .value |      .lower |     .upper | .width | .point | .interval |
+| :-------------- | ---------: | ----------: | ---------: | -----: | :----- | :-------- |
+| b\_distance\_km | \-0.894366 |  \-2.330475 |  0.5004796 |   0.95 | median | qi        |
+| b\_Intercept    |   7.092545 | \-23.548373 | 38.3353151 |   0.95 | median | qi        |
+| sigma           |  30.717506 |   25.723497 | 37.5511880 |   0.95 | median | qi        |
 
 ``` r
 fit_tt_bayes_transp %>%
@@ -985,7 +421,7 @@ fit_tt_bayes_transp %>%
          title = 'Bayesian Tuesday & Thursday Model w Confounder')
 ```
 
-![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](survey_analysis_arrival_time_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 # Discussion of the results
 

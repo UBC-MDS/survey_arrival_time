@@ -1,8 +1,8 @@
 ---
 title: "Survey Analysis Arrival Time"
+author: "Akansha Vashisth, Ian Flores Siaca, Rachel K. Riggs, Milos Milic"
+date: '2019-04-13'
 output: github_document
-editor_options: 
-  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -11,18 +11,93 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ## Libraries
 
-```{r}
+```{r, warning=FALSE}
 library(tidyverse)
 library(tidybayes)
 library(brms)
 library(broom)
 library(knitr)
+library(gridExtra)
 ```
+
+## Load the data
 
 ```{r}
 clean_survey_all_days <- read_csv('https://raw.githubusercontent.com/UBC-MDS/survey_arrival_time/master/data/clean_survey_responses_all_days.csv')
 clean_survey_sep_days <- read_csv('https://raw.githubusercontent.com/UBC-MDS/survey_arrival_time/master/data/clean_survey_responses_sep_days.csv')
 ```
+
+# Survey question
+
+**How does distance from campus influence arrival time to lectures?**
+
+We conducted an observational study to explore if there is a relationship between the distance lived from class and arrival time. We also wanted to test a potential confounder for this relationship which is the mode of transportation a student takes to class.
+
+# Methods
+
+## Survey study design
+
+We asked our survey respondents to answer the following questions:
+
+- How far from Hugh Dempster do you live in kilometers via the mode of transport you use(a google maps link was provided to help with the distance estimation)?
+
+- What time do you typically arrive at Hugh Dempster on Mondays and Wednesdays?
+please enter in the format hh:mm
+
+- What time do you typically arrive at Hugh Dempster on Mondays and Wednesdays?
+please enter in the format hh:mm
+
+- What is your typical mode of transit? (drive, public transit, walk, or bike)
+
+## Data collection methods
+
+Data was collected by this [survey](https://ubc.ca1.qualtrics.com/jfe/form/SV_eo1whP0fPfWPCw5) hosted by Qualtrics. The survey had 56 participants from the MDS students 2018-2019 cohort and responses were anonymized.
+
+## Analysis methods
+
+We performed initial [exploratory data analysis](https://github.com/UBC-MDS/survey_arrival_time/blob/v2.0/milestone2.md) on our data. 
+
+To analyze the data, we consider 3 groups:
+- all days grouped together
+- Mondays and Wednesdays together
+- Tuesdays and Thursdays together
+
+Below we fit a linear regression using the distance as the predictor variable and the arrival time as the response variable. We compare this linear regression model with a null model through an ANOVA test. To validate the estimates of the frequentist approach, given the possibility of a small sample size, we use a Bayesian linear regression. After this, we will move on to using the mode of transportation as a confounder variable and fit a linear regression model with these variables. We will compare this model with the null model through an ANOVA test, and again validate using a Bayesian linear regression.
+
+# EDA
+
+```{r}
+### Exploratory Data Analysis
+plot1 <- clean_survey_all_days %>%
+  ggplot(height = 17 , width = 2) +
+  geom_histogram(aes(x=distance_km)) + 
+  theme(axis.title=element_text(size=10),
+        plot.title = element_text(size = 10, face = "bold")) +  
+  labs(y= "Frequency", x = "Distance (in km)", title = "Number of MDS Students v/s their distance of travel") 
+
+plot2 <- clean_survey_all_days %>%
+  ggplot() +
+  geom_histogram(aes(x=arrival)) +  
+  theme(axis.title=element_text(size=10),
+        plot.title = element_text(size = 10, face = "bold")) +  
+  labs(y= "Frequency", x = "Arrival time", title = "Number of MDS Students v/s their arrival time") 
+
+plot3 <- clean_survey_sep_days %>%
+  ggplot(size = 10) +
+  geom_bar(aes(x=mode_of_transport)) +
+  theme(axis.title=element_text(size=10),
+        plot.title = element_text(size = 10, face = "bold")) +  
+  labs(y= "Frequency", x = "Mode of transport", title = "Number of MDS Students using different modes of transport") 
+
+grid.arrange(plot1, plot2, plot3, ncol=3)
+```
+
+
+
+# Analysis and results
+
+
+
 
 ## Without Confounders
 
@@ -37,7 +112,7 @@ tidy(fit_all) %>%
 ```
 
 
-```{r}
+```{r, cache=TRUE}
 fit_all_bayes <- brm(arrival ~ distance_km, data = clean_survey_all_days, iter = 5000, cores = -1)
 
 # Returns the 95% estimates
@@ -47,7 +122,7 @@ fit_all_bayes %>%
     kable()
 ```
 
-```{r}
+```{r, cache=TRUE}
 fit_all_bayes %>%
     gather_draws(b_Intercept, b_distance_km) %>%
     ggplot(aes(.value)) +
@@ -66,7 +141,7 @@ tidy(fit_mw) %>%
     kable()
 ```
 
-```{r}
+```{r, cache=TRUE}
 fit_mw_bayes <- brm(mw_arrival ~ distance_km, data = clean_survey_sep_days, iter = 5000, cores = -1)
 
 fit_mw_bayes %>%
@@ -75,7 +150,7 @@ fit_mw_bayes %>%
     kable()
 ```
 
-```{r}
+```{r, cache=TRUE}
 fit_mw_bayes %>%
     gather_draws(b_Intercept, b_distance_km) %>%
     ggplot(aes(.value)) +
@@ -94,7 +169,7 @@ tidy(fit_tt) %>%
     kable()
 ```
 
-```{r}
+```{r, cache=TRUE}
 fit_tt_bayes <- brm(tt_arrival ~ distance_km, data = clean_survey_sep_days, iter = 5000, cores = -1)
 
 fit_tt_bayes %>%
@@ -103,7 +178,7 @@ fit_tt_bayes %>%
     kable()
 ```
 
-```{r}
+```{r, cache=TRUE}
 fit_tt_bayes %>%
     gather_draws(b_Intercept, b_distance_km) %>%
     ggplot(aes(.value)) +
@@ -125,7 +200,7 @@ tidy(fit_all_transp) %>%
 ```
 
 
-```{r}
+```{r, cache=TRUE}
 fit_all_bayes_transp <- brm(arrival ~ distance_km + mode_of_transport, data = clean_survey_all_days, iter = 5000, cores = -1)
 
 # Returns the 95% estimates
@@ -135,7 +210,7 @@ fit_all_bayes_transp %>%
     kable()
 ```
 
-```{r}
+```{r, cache=TRUE}
 fit_all_bayes_transp %>%
     gather_draws(b_Intercept, b_distance_km) %>%
     ggplot(aes(.value)) +
@@ -154,7 +229,7 @@ tidy(fit_mw_transp) %>%
     kable()
 ```
 
-```{r}
+```{r, cache=TRUE}
 fit_mw_bayes_transp <- brm(mw_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days, iter = 5000, cores = -1)
 
 fit_mw_bayes_transp %>%
@@ -163,7 +238,7 @@ fit_mw_bayes_transp %>%
     kable()
 ```
 
-```{r}
+```{r, cache=TRUE}
 fit_mw_bayes_transp %>%
     gather_draws(b_Intercept, b_distance_km) %>%
     ggplot(aes(.value)) +
@@ -182,7 +257,7 @@ tidy(fit_tt_transp) %>%
     kable()
 ```
 
-```{r}
+```{r, cache=TRUE}
 fit_tt_bayes_transp <- brm(tt_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days, iter = 5000, cores = -1)
 
 fit_tt_bayes_transp %>%
@@ -191,7 +266,7 @@ fit_tt_bayes_transp %>%
     kable()
 ```
 
-```{r}
+```{r, cache=TRUE}
 fit_tt_bayes_transp %>%
     gather_draws(b_Intercept, b_distance_km) %>%
     ggplot(aes(.value)) +
@@ -200,3 +275,10 @@ fit_tt_bayes_transp %>%
     labs(x = 'Value',
          title = 'Bayesian Tuesday & Thursday Model w Confounder')
 ```
+
+
+
+# Discussion of the results
+
+# Discussion of the survey/study design
+

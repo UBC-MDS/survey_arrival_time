@@ -148,11 +148,40 @@ tidy(fit_all) %>%
     kable()
 ```
 
-As per frequentist approach there is an association between distance and arrival time with a confidence interval of 95% (-1.604, -0.277).
+
+
+```{r}
+# Shows the Frequentist 0.95 confidence intervals
+
+confint_tidy(fit_all, conf.level = 0.95)
+
+```
+
+
+As per frequentist approach there is an association between distance and arrival time with a confidence interval of 95% (-1.604, -0.257).
 
 For every increase of 1 km lived from campus, the expected change in arrival time is early by almost 1 minute.
 
+
+```{r}
+#Frequentist plot
+
+ggplot(clean_survey_all_days, aes(x = arrival, y = distance_km)) + 
+  geom_point() +
+  xlab("arrival time relative to start of class") +
+  ylab("distance in km") +
+  ggtitle("Distance vs arrival time plot") +
+  stat_smooth(method = "lm", col = "red")
+
+```
+
+
+
+
+
 ```{r, include=FALSE, cache=TRUE}
+#Bayes Model
+
 fit_all_bayes <- brm(arrival ~ distance_km, data = clean_survey_all_days, iter = 5000, cores = -1)
 ```
 
@@ -167,6 +196,7 @@ fit_all_bayes %>%
 As per bayesian approach (Ian could you please take over from here)
 
 ```{r, cache=TRUE}
+#Plots the Baysean model
 fit_all_bayes %>%
     gather_draws(b_Intercept, b_distance_km) %>%
     ggplot(aes(.value)) +
@@ -179,17 +209,50 @@ fit_all_bayes %>%
 ### Distance and Arrival Time (Monday & Wednesday)
 
 ```{r}
+# Frequentist Model
 fit_mw <- lm(mw_arrival ~ distance_km, data = clean_survey_sep_days)
 
 tidy(fit_mw) %>% 
     kable()
 ```
 
+
+
+```{r}
+# Shows the Frequentist 0.95 confidence intervals
+
+confint_tidy(fit_mw, conf.level = 0.95)
+
+```
+
+
+As per frequentist approach there is an association between distance and arrival time with a confidence interval of 95% (-1.76, 0.017) for Monday and Wednesday classes(9 am start).
+
+
+
+```{r}
+#Frequentist plot
+
+ggplot(clean_survey_sep_days, aes(x = mw_arrival, y = distance_km)) + 
+  geom_point() +
+  xlab("arrival time relative to start of class (Monday and Wednesday)") +
+  ylab("distance in km") +
+  ggtitle("Distance vs arrival time plot(Monday and Wednesday)") +
+  stat_smooth(method = "lm", col = "red")
+
+```
+
+
+
+
+
 ```{r, include=FALSE, cache=TRUE}
+#Bayes Model
 fit_mw_bayes <- brm(mw_arrival ~ distance_km, data = clean_survey_sep_days, iter = 5000, cores = -1)
 ```
 
 ```{r, cache=TRUE}
+# Returns the 95% estimates
 fit_mw_bayes %>%
     gather_draws(b_Intercept, b_distance_km, sigma) %>%
     median_qi() %>%
@@ -197,6 +260,7 @@ fit_mw_bayes %>%
 ```
 
 ```{r, cache=TRUE}
+# Plots the Bayes Model
 fit_mw_bayes %>%
     gather_draws(b_Intercept, b_distance_km) %>%
     ggplot(aes(.value)) +
@@ -209,17 +273,54 @@ fit_mw_bayes %>%
 ### Distance and Arrival Time (Tuesday and Thursdays)
 
 ```{r}
+
+#Frequentist model
 fit_tt <- lm(tt_arrival ~ distance_km, data = clean_survey_sep_days)
 
 tidy(fit_tt) %>% 
     kable()
 ```
 
+
+
+
+```{r}
+# Shows the Frequentist 0.95 confidence intervals
+
+confint_tidy(fit_tt, conf.level = 0.95)
+
+```
+
+
+As per frequentist approach there is an association between distance and arrival time with a confidence interval of 95% (-2.1, 0.0677) for Tuesday and Thursday classes(9:30 am start).
+
+
+
+```{r}
+#Frequentist plot
+
+ggplot(clean_survey_sep_days, aes(x = tt_arrival, y = distance_km)) + 
+  geom_point() +
+  xlab("arrival time relative to start of class (Tuesday and Thursday)") +
+  ylab("distance in km") +
+  ggtitle("Distance vs arrival time plot(Tuesday and Thursday)") +
+  stat_smooth(method = "lm", col = "red")
+
+```
+
+
+
+
+
+
 ```{r, include=FALSE, cache=TRUE}
+#Bayes Model
 fit_tt_bayes <- brm(tt_arrival ~ distance_km, data = clean_survey_sep_days, iter = 5000, cores = -1)
 ```
 
 ```{r, cache=TRUE}
+# Returns the 95% estimates
+
 fit_tt_bayes %>%
     gather_draws(b_Intercept, b_distance_km, sigma) %>%
     median_qi() %>%
@@ -227,6 +328,7 @@ fit_tt_bayes %>%
 ```
 
 ```{r, cache=TRUE}
+# Plots the Bayes Model
 fit_tt_bayes %>%
     gather_draws(b_Intercept, b_distance_km) %>%
     ggplot(aes(.value)) +
@@ -241,6 +343,7 @@ fit_tt_bayes %>%
 ### Distance and Arrival Time (Overall)
 
 ```{r}
+#Frequentist approach
 fit_all_transp <- lm(arrival ~ distance_km + mode_of_transport, data = clean_survey_all_days)
 
 tidy(fit_all_transp) %>% 
@@ -248,7 +351,41 @@ tidy(fit_all_transp) %>%
 ```
 
 
+
+
+```{r}
+# Shows the Frequentist 0.95 confidence intervals
+
+confint_tidy(fit_all_transp, conf.level = 0.95)
+
+```
+
+
+
+```{r}
+#Frequentist plot
+
+ggplot(clean_survey_all_days, aes(x = arrival, y = distance_km)) + 
+  geom_point() +
+  facet_wrap(~mode_of_transport, nrow = 4) +
+  xlab("arrival time relative to start of class ") +
+  ylab("distance in km") +
+  ggtitle("Distance vs arrival time plot") +
+  stat_smooth(method = "lm", col = "red")
+
+```
+
+
+
+
+
+
+
+
+
 ```{r, include=FALSE, cache=TRUE}
+#Bayes model
+
 fit_all_bayes_transp <- brm(arrival ~ distance_km + mode_of_transport, data = clean_survey_all_days, iter = 5000, cores = -1)
 ```
 
@@ -261,6 +398,8 @@ fit_all_bayes_transp %>%
 ```
 
 ```{r, cache=TRUE}
+#Bayes model plot
+
 fit_all_bayes_transp %>%
     gather_draws(b_Intercept, b_distance_km) %>%
     ggplot(aes(.value)) +
@@ -273,17 +412,53 @@ fit_all_bayes_transp %>%
 ### Distance and Arrival Time (Monday & Wednesday)
 
 ```{r}
+
+#Frequentist
 fit_mw_transp <- lm(mw_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days)
 
 tidy(fit_mw_transp) %>% 
     kable()
 ```
 
+
+
+
+```{r}
+# Shows the Frequentist 0.95 confidence intervals
+
+confint_tidy(fit_mw_transp, conf.level = 0.95)
+
+```
+
+
+
+```{r}
+#Frequentist plot
+
+ggplot(clean_survey_sep_days, aes(x = mw_arrival, y = distance_km)) + 
+  geom_point() +
+  facet_wrap(~mode_of_transport, nrow = 4) +
+  xlab("arrival time relative to start of class (Monday and Wednesday) ") +
+  ylab("distance in km") +
+  ggtitle("Distance vs arrival time plot(Monday and Wednesday)") +
+  stat_smooth(method = "lm", col = "red")
+
+```
+
+
+
+
+
+
 ```{r, include=FALSE, cache=TRUE}
+#Bayes model
+
 fit_mw_bayes_transp <- brm(mw_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days, iter = 5000, cores = -1)
 ```
 
 ```{r, cache=TRUE}
+#Returns 95% estimates
+
 fit_mw_bayes_transp %>%
     gather_draws(b_Intercept, b_distance_km, sigma) %>%
     median_qi() %>%
@@ -291,6 +466,8 @@ fit_mw_bayes_transp %>%
 ```
 
 ```{r, cache=TRUE}
+#Plots the Bayes model
+
 fit_mw_bayes_transp %>%
     gather_draws(b_Intercept, b_distance_km) %>%
     ggplot(aes(.value)) +
@@ -303,11 +480,47 @@ fit_mw_bayes_transp %>%
 ### Distance and Arrival Time (Tuesday and Thursdays)
 
 ```{r}
+#Frequentist
 fit_tt_transp <- lm(tt_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days)
 
 tidy(fit_tt_transp) %>% 
     kable()
 ```
+
+
+
+
+
+
+```{r}
+# Shows the Frequentist 0.95 confidence intervals
+
+confint_tidy(fit_tt_transp, conf.level = 0.95)
+
+```
+
+The confidence intervals for all of the modes of transport are quite different cycling(-2.36 and 0.523), driving(-57.4 and 26.3), transit (-30.2 and 37.6), and walking (-38.6 and 32.8)
+
+
+
+```{r}
+#Frequentist plot
+
+ggplot(clean_survey_sep_days, aes(x = tt_arrival, y = distance_km)) + 
+  geom_point() +
+  facet_wrap(~mode_of_transport, nrow = 4) +
+  xlab("arrival time relative to start of class (Tuesday and Thursday) ") +
+  ylab("distance in km") +
+  ggtitle("Distance vs arrival time plot (Tuesday and Thursday)") +
+  stat_smooth(method = "lm", col = "red")
+
+```
+
+
+
+
+
+
 
 ```{r, include=FALSE, cache=TRUE}
 fit_tt_bayes_transp <- brm(tt_arrival ~ distance_km + mode_of_transport, data = clean_survey_sep_days, iter = 5000, cores = -1)

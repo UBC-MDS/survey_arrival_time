@@ -2,11 +2,11 @@
 
 # Arrival Time Survey
 
-**Date:** 2019-04-06
+**Date:** 2019-04-13
 
 **License:** [MIT](https://opensource.org/licenses/MIT)
 
-### Survey Report
+### [Survey Report](https://github.com/UBC-MDS/survey_arrival_time/blob/master/survey_analysis_arrival_time.md)
 
 
 

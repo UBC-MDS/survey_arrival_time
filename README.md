@@ -12,6 +12,8 @@
 
 Data available at [MDS repo](https://github.ubc.ca/MDS-2018-19/DSCI_554_survey_arrival_time)
 
+Peer review given: https://github.com/UBC-MDS/Capstone_Project_Survey/issues/18
+
 #### Authors:
 
 | Name | github handle |

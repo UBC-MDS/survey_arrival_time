@@ -206,7 +206,7 @@ fit_null_all <- lm(arrival ~ 1, data = clean_survey_all_days)
 anova(fit_null_all, fit_all) %>% knitr::kable()
 ```
 
-Under both frequentist and Bayesian approaches there is an association between distance and arrival time. For the frequentist approach the estimate is -0.945 with a confidence interval of 95% (-1.604, -0.257). For the Bayesian approach the estimate is -0.949 with credible interval of 95% (-1.639, -0.267).
+Under both frequentist and Bayesian approaches there is an association between distance and arrival time. For the frequentist approach the estimate is -0.945 with a confidence interval of 95% (-1.604, -0.257). For the Bayesian approach the estimate is -0.949 with credible interval of 95% (-1.639, -0.267). As we can see from our ANOVA results, our model does significantly better than a null model, meaning that there is a significant explanatory power in adding distance from campus to explain to arrival time at the lecture hall. 
 
 For every increase of 1 km lived from campus, the expected change in arrival time is early by almost 1 minute.
 
@@ -265,7 +265,7 @@ fit_null_mw <- lm(mw_arrival ~ 1, data = clean_survey_sep_days)
 anova(fit_null_mw, fit_mw) %>% knitr::kable()
 ```
 
-Under both frequentist and Bayesian approaches there is an association between distance and arrival time for Mondays and Wednesdays. For the frequentist approach the estimate is -0.87 with a confidence interval of 95% (-1.76, 0.01). For the Bayesian approach the estimate is -0.87 with credible interval of 95% (-1.75, 0.01).
+Under both frequentist and Bayesian approaches there is an association between distance and arrival time for Mondays and Wednesdays. For the frequentist approach the estimate is -0.87 with a confidence interval of 95% (-1.76, 0.01). For the Bayesian approach the estimate is -0.87 with credible interval of 95% (-1.75, 0.01). As we can see from our ANOVA results, our model doesn't do significantly better than a null model, meaning that there is no significant explanatory power in adding distance from campus to explain to arrival time at the lecture hall for Mondays and Wednesdays.
 
 ### Distance and Arrival Time (Tuesday & Thursday)
 
@@ -322,7 +322,7 @@ fit_null_tt <- lm(tt_arrival ~ 1, data = clean_survey_sep_days)
 anova(fit_null_tt, fit_tt) %>% knitr::kable()
 ```
 
-Under both frequentist and Bayesian approaches there is _not_ an association between distance and arrival time for Tuesdays and Thursdays. For the frequentist approach the estimate is -1.02 with a confidence interval of 95% (-2.1, 0.0677). For the Bayesian approach the estimate is -1.02 with credible interval of 95% (-2.05, 0.02).
+Under both frequentist and Bayesian approaches there is _not_ an association between distance and arrival time for Tuesdays and Thursdays. For the frequentist approach the estimate is -1.02 with a confidence interval of 95% (-2.1, 0.0677). For the Bayesian approach the estimate is -1.02 with credible interval of 95% (-2.05, 0.02). As we can see from our ANOVA results, our model doesn't do significantly better than a null model, meaning that there is no significant explanatory power in adding distance from campus to explain to arrival time at the lecture hall for Tuesdays and Thursdays.
 
 ## With Confounders
 
@@ -503,18 +503,18 @@ fit_tt_bayes_transp %>%
 
 # Discussion of the results
 
-From our results we can see that there is a relationship between how far someone lives from campus and their arrival time. This was found overall and for the two groups of days (Mondays-Wednesdays, Tuesdays-Thursdays). Given the consistency between methods in both the estimates achieved and the confidence/credible intervals allows us to infer that there is an association between how far someone lives from campus and their time of arrival. This picture changed when including mode of transport as our confounder in the analysis. When doing this component, we could observe that mode of transport doesn't have an effect as a confounder as our estimates didn't change to be outside of the confidence/credible intervals of the first estimates. This phenomena remained both for the overall analysis and for the focused analysis in the groups of days. 
+From our results we can see that there is a relationship between how far someone lives from campus and their arrival time. This was found overall and for the two groups of days (Mondays-Wednesdays, Tuesdays-Thursdays). Given the consistency between methods in both the estimates achieved and the confidence/credible intervals allows us to infer that there is an association between how far someone lives from campus and their time of arrival. However, when comparing the frequentist models to a null model, only the overall model did significantly better than the null model. This might be explained by Simpson's Paradox. This picture changed when including mode of transport as our confounder in the analysis. When doing this component, we could observe that mode of transport doesn't have an effect as a confounder as our estimates didn't change to be outside of the confidence/credible intervals of the first estimates. This phenomena remained both for the overall analysis and for the focused analysis in the groups of days. 
 
 # Discussion of the survey/study design
 
-- what did you do well to make this study as causal as possible?
+- What did you do well to make this study as causal as possible?
 
-We included mode of transportation as a potential confounding variable when setting up our study. We included this question in our survey so that we could collect this data from the beginning.
+We designed the survey in a manner in which we could analyze potential confounder variables in our problem For this, we included mode of transportation as a potential confounding variable when setting up our study.
 
-- what was not done well and how did that effect your studies conclusions?
+- What was not done well and how did that effect your studies conclusions?
 
 We could have included potential additional confounders. This may or may not have affected our conclusions.
 
-- what would you do differently next time to improve your survey/study design and why?
+- What would you do differently next time to improve your survey/study design and why?
 
 We would ask students about their habits before coming to class (e.g., do you eat breakfast, stop for coffee, etc.?).
